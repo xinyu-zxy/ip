@@ -1,3 +1,3 @@
 public enum CommandType {
-    BYE, LIST, MARK, UNMARK
+    BYE, LIST, MARK, UNMARK, UNKNOWN
 }
