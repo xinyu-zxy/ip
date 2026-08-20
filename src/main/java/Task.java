@@ -1,15 +1,15 @@
 public class Task {
-    private String name;
+    private String description;
     boolean isDone;
 
-    public Task(String name) {
-        this.name = name;
+    public Task(String description) {
+        this.description = description;
         this.isDone = false;
     }
 
     //getter to obtain the task description
-    public String getName() {
-        return this.name;
+    public String getDescription() {
+        return this.description;
     }
 
     public void markAsDone() {
@@ -26,6 +26,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return (this.isDone ? "[X] " : "[ ] ") + this.name;
+        return (this.isDone ? "[X] " : "[ ] ")
+                + this.description;
     }
 }

@@ -11,10 +11,10 @@ public class Bubu {
         String banner = " /\\___/\\ \n"
                 + "(  o.o  )  Hello! I'm BUBU!\n";
 
-        System.out.println(this.line);
+        System.out.println(line);
         System.out.println(banner);
         System.out.println("What can I do for you? Meow!");
-        System.out.println(this.line);
+        System.out.println(line);
 
         boolean isEnd = false;
         while (!isEnd) {
@@ -37,11 +37,16 @@ public class Bubu {
                 case UNMARK:
                     this.commandUnmark(input);
                     break;
+                case TODO:
+                    this.commandToDo(input);
+                    break;
+                case DEADLINE:
+                    this.commandDeadline(input);
+                    break;
+                case EVENT:
+                    this.commandEvent(input);
+                    break;
                 default:
-                    Task task = new Task(input);
-                    tasks.add(task);
-                    System.out.println("added: " + input);
-                    System.out.println(line);
                     break;
             }
         }
@@ -69,6 +74,37 @@ public class Bubu {
         this.tasks.get(index).markAsUndone();
         System.out.println("Meow! I've marked this task as not done yet:");
         System.out.println(this.tasks.get(index).toString());
+        System.out.println(line);
+    }
+
+    private void commandToDo(String input) {
+        String description = Parser.parseArg(input);
+        ToDo task = new ToDo(description);
+        this.addTask(task);
+    }
+
+    private void commandDeadline(String input) {
+        String[] info = Parser.parseDeadline(input);
+        Deadline deadline = new Deadline(info[0].trim(), info[1].trim());
+        this.addTask(deadline);
+    }
+
+    private void commandEvent(String input) {
+        String[] info = Parser.parseEvent(input);
+        Event event = new Event(info[0].trim(), info[1].trim(), info[2].trim());
+        this.addTask(event);
+    }
+
+    private void addTask(Task task) {
+        this.tasks.add(task);
+        System.out.println("Got it meow. I've added this task:");
+        System.out.println("  " + task);
+
+        if (this.tasks.size() < 2) {
+            System.out.println(String.format("Now you have %d task in the list. Meow!", this.tasks.size()));
+        } else {
+            System.out.println(String.format("Now you have %d tasks in the list. Meow!", this.tasks.size()));
+        }
         System.out.println(line);
     }
 }
