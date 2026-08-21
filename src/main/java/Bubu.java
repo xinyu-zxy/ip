@@ -1,3 +1,6 @@
+import task.*;
+import exception.*;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -21,33 +24,38 @@ public class Bubu {
             String input = scanner.nextLine();
             System.out.println(line);
 
-            CommandType command = Parser.parse(input);
-            switch(command) {
-                case BYE:
-                    System.out.println("Bye. Hope to see you again soon! Meow!");
-                    System.out.println(line);
-                    isEnd = true;
-                    break;
-                case LIST:
-                    this.commandList();
-                    break;
-                case MARK:
-                    this.commandMark(input);
-                    break;
-                case UNMARK:
-                    this.commandUnmark(input);
-                    break;
-                case TODO:
-                    this.commandToDo(input);
-                    break;
-                case DEADLINE:
-                    this.commandDeadline(input);
-                    break;
-                case EVENT:
-                    this.commandEvent(input);
-                    break;
-                default:
-                    break;
+            try {
+                CommandType command = Parser.parse(input);
+                switch(command) {
+                    case BYE:
+                        System.out.println("Bye. Hope to see you again soon! Meow!");
+                        System.out.println(line);
+                        isEnd = true;
+                        break;
+                    case LIST:
+                        this.commandList();
+                        break;
+                    case MARK:
+                        this.commandMark(input);
+                        break;
+                    case UNMARK:
+                        this.commandUnmark(input);
+                        break;
+                    case TODO:
+                        this.commandToDo(input);
+                        break;
+                    case DEADLINE:
+                        this.commandDeadline(input);
+                        break;
+                    case EVENT:
+                        this.commandEvent(input);
+                        break;
+                    default:
+                        break;
+                }
+            } catch (BubuException e) {
+                System.out.println(e.getMessage());
+                System.out.println(line);
             }
         }
         scanner.close();
@@ -61,35 +69,58 @@ public class Bubu {
         System.out.println(line);
     }
 
-    private void commandMark(String input) {
-        int index = Integer.parseInt(input.split(" ")[1]) - 1;
-        this.tasks.get(index).markAsDone();
-        System.out.println("Meow! I've marked this task as done:");
-        System.out.println(this.tasks.get(index).toString());
-        System.out.println(line);
+    private void commandMark(String input) throws BubuException {
+        String[] output = input.trim().split(" ", 2);
+        if (output.length < 2) {
+            throw new MissingArgumentException("mark");
+        }
+        try {
+            int index = Integer.parseInt(input.split(" ")[1]) - 1;
+            if (index < 0 || index >= this.tasks.size()) {
+                throw new InvalidIndexException(this.tasks.size());
+            }
+            this.tasks.get(index).markAsDone();
+            System.out.println("Meow! I've marked this task as done:");
+            System.out.println(this.tasks.get(index).toString());
+            System.out.println(line);
+        } catch (NumberFormatException e) {
+            throw new InvalidIndexException(output[1]);
+        }
     }
 
-    private void commandUnmark(String input) {
-        int index = Integer.parseInt(input.split(" ")[1]) - 1;
-        this.tasks.get(index).markAsUndone();
-        System.out.println("Meow! I've marked this task as not done yet:");
-        System.out.println(this.tasks.get(index).toString());
-        System.out.println(line);
+    private void commandUnmark(String input) throws BubuException {
+        String[] output = input.trim().split(" ", 2);
+        if (output.length < 2) {
+            throw new MissingArgumentException("unmark");
+        }
+        try {
+            int index = Integer.parseInt(input.split(" ")[1]) - 1;
+            if (index < 0 || index >= this.tasks.size()) {
+                throw new InvalidIndexException(this.tasks.size());
+            }
+            this.tasks.get(index).markAsUndone();
+            System.out.println("Meow! I've marked this task as not done yet:");
+            System.out.println(this.tasks.get(index).toString());
+            System.out.println(line);
+        } catch (NumberFormatException e) {
+            throw new InvalidIndexException(output[1]);
+        }
     }
 
-    private void commandToDo(String input) {
+
+    private void commandToDo(String input) throws BubuException {
         String description = Parser.parseArg(input);
         ToDo task = new ToDo(description);
         this.addTask(task);
     }
 
-    private void commandDeadline(String input) {
+    private void commandDeadline(String input) throws BubuException {
         String[] info = Parser.parseDeadline(input);
         Deadline deadline = new Deadline(info[0].trim(), info[1].trim());
         this.addTask(deadline);
     }
 
-    private void commandEvent(String input) {
+    private void commandEvent(String input) throws BubuException {
         String[] info = Parser.parseEvent(input);
         Event event = new Event(info[0].trim(), info[1].trim(), info[2].trim());
         this.addTask(event);
