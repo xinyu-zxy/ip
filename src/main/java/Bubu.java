@@ -50,6 +50,9 @@ public class Bubu {
                     case EVENT:
                         this.commandEvent(input);
                         break;
+                    case DELETE:
+                        this.commandDelete(input);
+                        break;
                     default:
                         break;
                 }
@@ -62,9 +65,18 @@ public class Bubu {
     }
 
     private void commandList() {
-        System.out.println("Meow! Here are the tasks in your list:");
-        for (int i = 0; i < this.tasks.size(); i++) {
-            System.out.println((i + 1) + ". " + this.tasks.get(i));
+        int len = this.tasks.size();
+        if (len == 0) {
+            System.out.println("Meow! Your task list is empty.");
+        } else {
+            if (len == 1) {
+                System.out.println("Meow! Here is the task in your list:");
+            } else {
+                System.out.println("Meow! Here are the tasks in your list:");
+            }
+            for (int i = 0; i < this.tasks.size(); i++) {
+                System.out.println((i + 1) + ". " + this.tasks.get(i));
+            }
         }
         System.out.println(line);
     }
@@ -137,5 +149,32 @@ public class Bubu {
             System.out.println(String.format("Now you have %d tasks in the list. Meow!", this.tasks.size()));
         }
         System.out.println(line);
+    }
+
+    private void commandDelete(String input) throws BubuException {
+        String[] output = input.trim().split(" ", 2);
+        if (output.length < 2) {
+            throw new MissingArgumentException("delete");
+        }
+
+        try {
+            int index = Integer.parseInt(input.split(" ")[1]) - 1;
+            if (index < 0 || index >= this.tasks.size()) {
+                throw new InvalidIndexException(this.tasks.size());
+            }
+
+            Task task = this.tasks.remove(index);
+            System.out.println("Meow! I've removed this task:");
+            System.out.println("  " + task.toString());
+
+            if (this.tasks.size() == 1) {
+                System.out.println("Now you have 1 task in the list. Meow!");
+            } else {
+                System.out.println(String.format("Now you have %d tasks in the list. Meow!", this.tasks.size()));
+            }
+            System.out.println(line);
+        } catch (NumberFormatException e) {
+            throw new InvalidIndexException(output[1]);
+        }
     }
 }
