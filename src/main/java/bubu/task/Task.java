@@ -1,15 +1,29 @@
 package bubu.task;
 
+/**
+ * Represents a task that can be marked as complete.
+ */
 public abstract class Task {
+    /** Description shown to the user. */
     private String description;
+    /** Whether the task has been completed. */
     boolean isDone;
 
+    /**
+     * Creates an incomplete task with the supplied description.
+     *
+     * @param description task description
+     */
     public Task(String description) {
         this.description = description;
         this.isDone = false;
     }
 
-    //getter to obtain the task description
+    /**
+     * Returns this task's description.
+     *
+     * @return task description
+     */
     public String getDescription() {
         return this.description;
     }
@@ -18,14 +32,25 @@ public abstract class Task {
         return this.isDone;
     }
 
+    /**
+     * Marks this task as complete.
+     */
     public void markAsDone() {
         this.isDone = true;
     }
 
+    /**
+     * Marks this task as incomplete.
+     */
     public void markAsUndone() {
         this.isDone = false;
     }
 
+    /**
+     * Returns whether this task is complete.
+     *
+     * @return true if this task is complete
+     */
     public boolean getStatus() {
         return isDone;
     }

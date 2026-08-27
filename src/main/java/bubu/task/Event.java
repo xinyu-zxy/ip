@@ -4,12 +4,24 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+/**
+ * Represents a task that occurs between a start and end date-time.
+ */
 public class Event extends Task {
     private static final DateTimeFormatter DISPLAY_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd yyyy, h:mma", Locale.ENGLISH);
+    /** Date and time at which the event starts. */
     private LocalDateTime start;
+    /** Date and time at which the event ends. */
     private LocalDateTime end;
 
+    /**
+     * Creates an event task.
+     *
+     * @param description event description
+     * @param start event start date and time
+     * @param end event end date and time
+     */
     public Event(String description, LocalDateTime start, LocalDateTime end) {
         super(description);
         this.start = start;
