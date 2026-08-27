@@ -8,7 +8,8 @@ import exception.BubuException;
 import exception.MissingArgumentException;
 import exception.InvalidIndexException;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -138,15 +139,15 @@ public class Bubu {
 
     private void commandDeadline(String input) throws BubuException {
         String[] info = Parser.parseDeadline(input);
-        LocalDate deadlineDate = Parser.parseDate(info[1]);
-        Deadline deadline = new Deadline(info[0].trim(), deadlineDate);
+        LocalDateTime deadlineDateTime = Parser.parseDateTime(info[1], LocalTime.of(23, 59));
+        Deadline deadline = new Deadline(info[0].trim(), deadlineDateTime);
         this.addTask(deadline);
     }
 
     private void commandEvent(String input) throws BubuException {
         String[] info = Parser.parseEvent(input);
-        LocalDate start = Parser.parseDate(info[1]);
-        LocalDate end = Parser.parseDate(info[2]);
+        LocalDateTime start = Parser.parseDateTime(info[1], LocalTime.MIDNIGHT);
+        LocalDateTime end = Parser.parseDateTime(info[2], LocalTime.of(23, 59));
         Event event = new Event(info[0].trim(), start, end);
         this.addTask(event);
     }

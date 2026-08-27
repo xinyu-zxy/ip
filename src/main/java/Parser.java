@@ -1,8 +1,16 @@
 import exception.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 public class Parser {
+    private static final DateTimeFormatter DATE_TIME_FORMAT =
+            DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
+                    .withResolverStyle(ResolverStyle.STRICT);
 
     /**
      * Extracts the command word after ignoring leading and repeated whitespace.
@@ -64,17 +72,23 @@ public class Parser {
     }
 
     /**
-     * Parses a date string in the format "YYYY-MM-DD" into a LocalDate object.
+     * Parses a date-time or date-only value. A date-only value receives the
+     * supplied default time.
      *
-     * @param dateString the date string to parse
-     * @return the corresponding LocalDate object
-     * @throws InvalidDateTimeException if the date string is not in the correct format
+     * @param input date in yyyy-MM-dd or date-time in yyyy-MM-dd HHmm format
+     * @param defaultTime time to use when the input contains only a date
+     * @return the parsed date and time
+     * @throws InvalidDateTimeException if neither accepted format matches
      */
-    public static LocalDate parseDate(String dateString) throws InvalidDateTimeException {
+    public static LocalDateTime parseDateTime(String input, LocalTime defaultTime) throws InvalidDateTimeException {
         try {
-            return LocalDate.parse(dateString);
-        } catch (Exception e) {
-            throw new InvalidDateTimeException();
+            return LocalDateTime.parse(input, DATE_TIME_FORMAT);
+        } catch (DateTimeParseException ignored) {
+            try {
+                return LocalDate.parse(input).atTime(defaultTime);
+            } catch (DateTimeParseException e) {
+                throw new InvalidDateTimeException();
+            }
         }
     }
 }

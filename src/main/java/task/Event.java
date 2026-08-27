@@ -1,17 +1,16 @@
 package task;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Locale;
 
 public class Event extends Task {
     private static final DateTimeFormatter DISPLAY_FORMAT =
-            DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH);
-    private LocalDate start;
-    private LocalDate end;
+            DateTimeFormatter.ofPattern("MMM dd yyyy, h:mma");
+    private LocalDateTime start;
+    private LocalDateTime end;
 
-    public Event(String description, LocalDate start, LocalDate end) {
+    public Event(String description, LocalDateTime start, LocalDateTime end) {
         super(description);
         this.start = start;
         this.end = end;
@@ -22,7 +21,7 @@ public class Event extends Task {
      *
      * @return event start time
      */
-    public LocalDate getStart() {
+    public LocalDateTime getStart() {
         return this.start;
     }
 
@@ -31,7 +30,7 @@ public class Event extends Task {
      *
      * @return event end time
      */
-    public LocalDate getEnd() {
+    public LocalDateTime getEnd() {
         return this.end;
     }
 
