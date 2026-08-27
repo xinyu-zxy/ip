@@ -1,4 +1,4 @@
-package exception;
+package bubu.exception;
 
 public class BubuException extends Exception {
 

@@ -1,9 +1,15 @@
-import Storage.Storage;
-import task.Task;
+package bubu;
 
-import exception.BubuException;
-import exception.MissingArgumentException;
-import exception.InvalidIndexException;
+import bubu.command.Command;
+import bubu.command.CommandType;
+import bubu.exception.BubuException;
+import bubu.exception.InvalidIndexException;
+import bubu.exception.MissingArgumentException;
+import bubu.parser.Parser;
+import bubu.storage.Storage;
+import bubu.task.Task;
+import bubu.task.TaskList;
+import bubu.ui.Ui;
 
 public class Bubu {
     private final Storage storage = new Storage();

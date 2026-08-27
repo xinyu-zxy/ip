@@ -1,5 +1,9 @@
-import Storage.Storage;
-import exception.BubuException;
+package bubu.command;
+
+import bubu.exception.BubuException;
+import bubu.storage.Storage;
+import bubu.task.TaskList;
+import bubu.ui.Ui;
 
 /**
  * Represents one executable chatbot command.

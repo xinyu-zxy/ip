@@ -1,9 +1,9 @@
-package Storage;
+package bubu.storage;
 
-import task.Deadline;
-import task.Event;
-import task.Task;
-import task.ToDo;
+import bubu.task.Deadline;
+import bubu.task.Event;
+import bubu.task.Task;
+import bubu.task.ToDo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

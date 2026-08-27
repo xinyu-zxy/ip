@@ -1,5 +1,9 @@
-import Storage.Storage;
-import task.ToDo;
+package bubu.command;
+
+import bubu.storage.Storage;
+import bubu.task.TaskList;
+import bubu.task.ToDo;
+import bubu.ui.Ui;
 
 /**
  * Adds a to-do task.

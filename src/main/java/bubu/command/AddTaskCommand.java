@@ -1,5 +1,9 @@
-import Storage.Storage;
-import task.Task;
+package bubu.command;
+
+import bubu.storage.Storage;
+import bubu.task.Task;
+import bubu.task.TaskList;
+import bubu.ui.Ui;
 
 /**
  * Base class for commands that create and save one task.

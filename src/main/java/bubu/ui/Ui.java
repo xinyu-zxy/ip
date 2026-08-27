@@ -1,4 +1,6 @@
-import task.Task;
+package bubu.ui;
+
+import bubu.task.Task;
 
 import java.util.List;
 import java.util.Scanner;

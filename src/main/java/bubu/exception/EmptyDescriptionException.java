@@ -1,4 +1,4 @@
-package exception;
+package bubu.exception;
 
 public class EmptyDescriptionException extends BubuException {
 
