@@ -1,16 +1,23 @@
-import exception.*;
+import exception.BubuException;
+import exception.MissingArgumentException;
+import exception.EmptyDescriptionException;
+import exception.UnknownCommandException;
 
 public class Parser {
 
-    /* This method parse help to extract out the first word in the input
-    that is being separate by " " and match with CommandType so we
-    can perform the correct command.
+    /**
+     * Extracts the command word after ignoring leading and repeated whitespace.
+     *
+     * @param input command entered by the user
+     * @return the matching command type
+     * @throws BubuException if the command is unknown
      */
     public static CommandType parse(String input) throws BubuException{
-        String command = input.split(" ", 2)[0];
-        if (command.trim().isEmpty()) {
+        String trimmedInput = input.trim();
+        if (trimmedInput.isEmpty()) {
             throw new UnknownCommandException();
         }
+        String command = trimmedInput.split("\\s+", 2)[0];
 
         try {
             return CommandType.valueOf(command.toUpperCase());
@@ -20,7 +27,7 @@ public class Parser {
     }
 
     public static String parseArg(String input) throws BubuException{
-        String[] args = input.trim().split(" ", 2);
+        String[] args = input.trim().split("\\s+", 2);
         if (args.length < 2 || args[1].trim().isEmpty()) {
             throw new EmptyDescriptionException(args[0]);
         }
