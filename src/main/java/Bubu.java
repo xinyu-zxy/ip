@@ -10,11 +10,9 @@ import exception.InvalidIndexException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-
 public class Bubu {
     private final Storage storage = new Storage();
-    private ArrayList<Task> tasks = new ArrayList<>(storage.load());
+    private final TaskList tasks = new TaskList(storage.load());
     private final Ui ui = new Ui();
 
     public void run() {
@@ -64,7 +62,7 @@ public class Bubu {
     }
 
     private void commandList() {
-        ui.showTaskList(tasks);
+        ui.showTaskList(tasks.asList());
     }
 
     private void commandMark(String input) throws BubuException {
@@ -74,11 +72,11 @@ public class Bubu {
         }
         try {
             int index = Integer.parseInt(output[1]) - 1;
-            if (index < 0 || index >= this.tasks.size()) {
+            if (!tasks.hasIndex(index)) {
                 throw new InvalidIndexException(this.tasks.size());
             }
             this.tasks.get(index).markAsDone();
-            this.storage.save(this.tasks);
+            this.storage.save(tasks.asList());
             ui.showTaskMarked(this.tasks.get(index), true);
         } catch (NumberFormatException e) {
             throw new InvalidIndexException(output[1]);
@@ -92,11 +90,11 @@ public class Bubu {
         }
         try {
             int index = Integer.parseInt(output[1]) - 1;
-            if (index < 0 || index >= this.tasks.size()) {
+            if (!tasks.hasIndex(index)) {
                 throw new InvalidIndexException(this.tasks.size());
             }
             this.tasks.get(index).markAsUndone();
-            this.storage.save(this.tasks);
+            this.storage.save(tasks.asList());
             ui.showTaskMarked(this.tasks.get(index), false);
         } catch (NumberFormatException e) {
             throw new InvalidIndexException(output[1]);
@@ -127,7 +125,7 @@ public class Bubu {
 
     private void addTask(Task task) {
         this.tasks.add(task);
-        this.storage.save(this.tasks);
+        this.storage.save(tasks.asList());
         ui.showTaskAdded(task, tasks.size());
     }
 
@@ -139,12 +137,12 @@ public class Bubu {
 
         try {
             int index = Integer.parseInt(output[1]) - 1;
-            if (index < 0 || index >= this.tasks.size()) {
+            if (!tasks.hasIndex(index)) {
                 throw new InvalidIndexException(this.tasks.size());
             }
 
             Task task = this.tasks.remove(index);
-            this.storage.save(this.tasks);
+            this.storage.save(tasks.asList());
             ui.showTaskDeleted(task, tasks.size());
         } catch (NumberFormatException e) {
             throw new InvalidIndexException(output[1]);
