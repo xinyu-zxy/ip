@@ -1,0 +1,23 @@
+import Storage.Storage;
+import task.Deadline;
+
+import java.time.LocalDateTime;
+
+/**
+ * Adds a deadline task.
+ */
+public class DeadlineCommand extends AddTaskCommand {
+    private final String description;
+    private final LocalDateTime deadline;
+
+    /** Creates a deadline command with its parsed deadline date and time. */
+    public DeadlineCommand(String description, LocalDateTime deadline) {
+        this.description = description;
+        this.deadline = deadline;
+    }
+
+    @Override
+    public void execute(TaskList tasks, Ui ui, Storage storage) {
+        addTask(new Deadline(description, deadline), tasks, ui, storage);
+    }
+}

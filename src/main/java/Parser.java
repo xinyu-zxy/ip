@@ -34,17 +34,30 @@ public class Parser {
     }
 
     /**
-     * Creates a command object for the read-only and exit command types moved
-     * to the command hierarchy in this iteration.
+     * Creates an executable command for command types already moved to the
+     * command hierarchy.
      *
      * @param commandType parsed command type
+     * @param input full user input
      * @return executable command object
+     * @throws BubuException if the command arguments are invalid
      * @throws IllegalArgumentException if the type has not yet been extracted
      */
-    public static Command createSimpleCommand(CommandType commandType) {
+    public static Command createCommand(CommandType commandType, String input) throws BubuException {
         return switch (commandType) {
             case LIST -> new ListCommand();
             case BYE -> new ExitCommand();
+            case TODO -> new TodoCommand(parseArg(input));
+            case DEADLINE -> {
+                String[] info = parseDeadline(input);
+                yield new DeadlineCommand(info[0], parseDateTime(info[1], LocalTime.of(23, 59)));
+            }
+            case EVENT -> {
+                String[] info = parseEvent(input);
+                LocalDateTime start = parseDateTime(info[1], LocalTime.MIDNIGHT);
+                LocalDateTime end = parseDateTime(info[2], LocalTime.of(23, 59));
+                yield new EventCommand(info[0], start, end);
+            }
             default -> throw new IllegalArgumentException(
                     "Command type has not yet been extracted: " + commandType);
         };

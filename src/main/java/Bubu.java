@@ -1,15 +1,10 @@
 import Storage.Storage;
 import task.Task;
-import task.ToDo;
-import task.Deadline;
-import task.Event;
 
 import exception.BubuException;
 import exception.MissingArgumentException;
 import exception.InvalidIndexException;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 public class Bubu {
     private final Storage storage = new Storage();
     private final TaskList tasks = new TaskList(storage.load());
@@ -28,24 +23,18 @@ public class Bubu {
                 switch(command) {
                     case BYE:
                     case LIST:
-                        Command simpleCommand = Parser.createSimpleCommand(command);
-                        simpleCommand.execute(tasks, ui, storage);
-                        isEnd = simpleCommand.isExit();
+                    case TODO:
+                    case DEADLINE:
+                    case EVENT:
+                        Command extractedCommand = Parser.createCommand(command, input);
+                        extractedCommand.execute(tasks, ui, storage);
+                        isEnd = extractedCommand.isExit();
                         break;
                     case MARK:
                         this.commandMark(input);
                         break;
                     case UNMARK:
                         this.commandUnmark(input);
-                        break;
-                    case TODO:
-                        this.commandToDo(input);
-                        break;
-                    case DEADLINE:
-                        this.commandDeadline(input);
-                        break;
-                    case EVENT:
-                        this.commandEvent(input);
                         break;
                     case DELETE:
                         this.commandDelete(input);
@@ -96,33 +85,6 @@ public class Bubu {
         }
     }
 
-
-    private void commandToDo(String input) throws BubuException {
-        String description = Parser.parseArg(input);
-        ToDo task = new ToDo(description);
-        this.addTask(task);
-    }
-
-    private void commandDeadline(String input) throws BubuException {
-        String[] info = Parser.parseDeadline(input);
-        LocalDateTime deadlineDateTime = Parser.parseDateTime(info[1], LocalTime.of(23, 59));
-        Deadline deadline = new Deadline(info[0].trim(), deadlineDateTime);
-        this.addTask(deadline);
-    }
-
-    private void commandEvent(String input) throws BubuException {
-        String[] info = Parser.parseEvent(input);
-        LocalDateTime start = Parser.parseDateTime(info[1], LocalTime.MIDNIGHT);
-        LocalDateTime end = Parser.parseDateTime(info[2], LocalTime.of(23, 59));
-        Event event = new Event(info[0].trim(), start, end);
-        this.addTask(event);
-    }
-
-    private void addTask(Task task) {
-        this.tasks.add(task);
-        this.storage.save(tasks.asList());
-        ui.showTaskAdded(task, tasks.size());
-    }
 
     private void commandDelete(String input) throws BubuException {
         String[] output = input.trim().split("\\s+", 2);
