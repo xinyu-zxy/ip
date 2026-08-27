@@ -7,7 +7,7 @@ public abstract class Task {
     /** Description shown to the user. */
     private String description;
     /** Whether the task has been completed. */
-    boolean isDone;
+    private boolean isDone;
 
     /**
      * Creates an incomplete task with the supplied description.
@@ -28,6 +28,11 @@ public abstract class Task {
         return this.description;
     }
 
+    /**
+     * Returns whether this task is complete.
+     *
+     * @return true if this task is complete
+     */
     public boolean isDone() {
         return this.isDone;
     }
@@ -44,15 +49,6 @@ public abstract class Task {
      */
     public void markAsUndone() {
         this.isDone = false;
-    }
-
-    /**
-     * Returns whether this task is complete.
-     *
-     * @return true if this task is complete
-     */
-    public boolean getStatus() {
-        return isDone;
     }
 
     @Override
