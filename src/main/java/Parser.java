@@ -1,7 +1,6 @@
-import exception.BubuException;
-import exception.MissingArgumentException;
-import exception.EmptyDescriptionException;
-import exception.UnknownCommandException;
+import exception.*;
+
+import java.time.LocalDate;
 
 public class Parser {
 
@@ -62,5 +61,20 @@ public class Parser {
                 timeLine[0].trim(),
                 timeLine[1].trim()};
         return output;
+    }
+
+    /**
+     * Parses a date string in the format "YYYY-MM-DD" into a LocalDate object.
+     *
+     * @param dateString the date string to parse
+     * @return the corresponding LocalDate object
+     * @throws InvalidDateTimeException if the date string is not in the correct format
+     */
+    public static LocalDate parseDate(String dateString) throws InvalidDateTimeException {
+        try {
+            return LocalDate.parse(dateString);
+        } catch (Exception e) {
+            throw new InvalidDateTimeException();
+        }
     }
 }

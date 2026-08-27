@@ -5,6 +5,7 @@ import task.Event;
 import task.Task;
 import task.ToDo;
 
+import java.time.LocalDate;
 import java.util.Scanner;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -97,8 +98,8 @@ public class Storage {
         String[] parts = line.split(" \\| ");
         Task task = switch (parts[0]) {
             case "T" -> new ToDo(parts[2]);
-            case "D" -> new Deadline(parts[2], parts[3]);
-            case "E" -> new Event(parts[2], parts[3], parts[4]);
+            case "D" -> new Deadline(parts[2], LocalDate.parse(parts[3]));
+            case "E" -> new Event(parts[2], LocalDate.parse(parts[3]), LocalDate.parse(parts[4]));
             default -> throw new IllegalArgumentException("Unknown type: " + parts[0]);
         };
 
