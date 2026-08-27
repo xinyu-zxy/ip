@@ -11,34 +11,25 @@ import exception.InvalidIndexException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Bubu {
     private final Storage storage = new Storage();
     private ArrayList<Task> tasks = new ArrayList<>(storage.load());
-    private static final String LINE = "___________________________________________________________";
+    private final Ui ui = new Ui();
 
     public void run() {
-        Scanner scanner = new Scanner(System.in);
-        String banner = " /\\___/\\ \n"
-                + "(  o.o  )  Hello! I'm BUBU!\n";
-
-        System.out.println(LINE);
-        System.out.println(banner);
-        System.out.println("What can I do for you? Meow!");
-        System.out.println(LINE);
+        ui.showWelcome();
 
         boolean isEnd = false;
         while (!isEnd) {
-            String input = scanner.nextLine();
-            System.out.println(LINE);
+            String input = ui.readCommand();
+            ui.showLine();
 
             try {
                 CommandType command = Parser.parse(input);
                 switch(command) {
                     case BYE:
-                        System.out.println("Bye. Hope to see you again soon! Meow!");
-                        System.out.println(LINE);
+                        ui.showGoodbye();
                         isEnd = true;
                         break;
                     case LIST:
@@ -66,28 +57,14 @@ public class Bubu {
                         break;
                 }
             } catch (BubuException e) {
-                System.out.println(e.getMessage());
-                System.out.println(LINE);
+                ui.showError(e.getMessage());
             }
         }
-        scanner.close();
+        ui.close();
     }
 
     private void commandList() {
-        int len = this.tasks.size();
-        if (len == 0) {
-            System.out.println("Meow! Your task list is empty.");
-        } else {
-            if (len == 1) {
-                System.out.println("Meow! Here is the task in your list:");
-            } else {
-                System.out.println("Meow! Here are the tasks in your list:");
-            }
-            for (int i = 0; i < this.tasks.size(); i++) {
-                System.out.println((i + 1) + ". " + this.tasks.get(i));
-            }
-        }
-        System.out.println(LINE);
+        ui.showTaskList(tasks);
     }
 
     private void commandMark(String input) throws BubuException {
@@ -102,9 +79,7 @@ public class Bubu {
             }
             this.tasks.get(index).markAsDone();
             this.storage.save(this.tasks);
-            System.out.println("Meow! I've marked this task as done:");
-            System.out.println(this.tasks.get(index).toString());
-            System.out.println(LINE);
+            ui.showTaskMarked(this.tasks.get(index), true);
         } catch (NumberFormatException e) {
             throw new InvalidIndexException(output[1]);
         }
@@ -122,9 +97,7 @@ public class Bubu {
             }
             this.tasks.get(index).markAsUndone();
             this.storage.save(this.tasks);
-            System.out.println("Meow! I've marked this task as not done yet:");
-            System.out.println(this.tasks.get(index).toString());
-            System.out.println(LINE);
+            ui.showTaskMarked(this.tasks.get(index), false);
         } catch (NumberFormatException e) {
             throw new InvalidIndexException(output[1]);
         }
@@ -155,15 +128,7 @@ public class Bubu {
     private void addTask(Task task) {
         this.tasks.add(task);
         this.storage.save(this.tasks);
-        System.out.println("Got it meow. I've added this task:");
-        System.out.println("  " + task);
-
-        if (this.tasks.size() < 2) {
-            System.out.println(String.format("Now you have %d task in the list. Meow!", this.tasks.size()));
-        } else {
-            System.out.println(String.format("Now you have %d tasks in the list. Meow!", this.tasks.size()));
-        }
-        System.out.println(LINE);
+        ui.showTaskAdded(task, tasks.size());
     }
 
     private void commandDelete(String input) throws BubuException {
@@ -180,15 +145,7 @@ public class Bubu {
 
             Task task = this.tasks.remove(index);
             this.storage.save(this.tasks);
-            System.out.println("Meow! I've removed this task:");
-            System.out.println("  " + task.toString());
-
-            if (this.tasks.size() == 1) {
-                System.out.println("Now you have 1 task in the list. Meow!");
-            } else {
-                System.out.println(String.format("Now you have %d tasks in the list. Meow!", this.tasks.size()));
-            }
-            System.out.println(LINE);
+            ui.showTaskDeleted(task, tasks.size());
         } catch (NumberFormatException e) {
             throw new InvalidIndexException(output[1]);
         }
