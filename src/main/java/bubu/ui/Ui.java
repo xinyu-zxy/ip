@@ -120,4 +120,23 @@ public class Ui {
         String noun = taskCount == 1 ? "task" : "tasks";
         System.out.println("Now you have " + taskCount + " " + noun + " in the list. Meow!");
     }
+
+    /**
+     * Displays all matchings tasks that match the search keyword.
+     *
+     * @param tasks list of matching tasks.
+     */
+    public void showMatchingTasks(List<Task> tasks) {
+        if (tasks.isEmpty()) {
+            System.out.println("Meow! No matching tasks found.");
+        } else {
+            System.out.println(tasks.size() == 1
+                    ? "Meow! Here is the matching task in your list:"
+                    : "Meow! Here are the matching tasks in your list:");
+            for (int index = 0; index < tasks.size(); index++) {
+                System.out.println((index + 1) + ". " + tasks.get(index));
+            }
+        }
+        showLine();
+    }
 }

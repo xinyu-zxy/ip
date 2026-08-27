@@ -12,7 +12,7 @@ public abstract class Task {
     /**
      * Creates an incomplete task with the supplied description.
      *
-     * @param description task description
+     * @param description task description.
      */
     public Task(String description) {
         this.description = description;
@@ -22,7 +22,7 @@ public abstract class Task {
     /**
      * Returns this task's description.
      *
-     * @return task description
+     * @return task description.
      */
     public String getDescription() {
         return this.description;
@@ -49,6 +49,15 @@ public abstract class Task {
      */
     public void markAsUndone() {
         this.isDone = false;
+    }
+
+    /**
+     * Returns whether this task is complete.
+     *
+     * @return true if this task is complete.
+     */
+    public boolean getStatus() {
+        return isDone;
     }
 
     @Override

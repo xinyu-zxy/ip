@@ -11,7 +11,9 @@ import bubu.ui.Ui;
 public class TodoCommand extends AddTaskCommand {
     private final String description;
 
-    /** Creates a to-do command for the supplied description. */
+    /**
+     * Creates a to-do command for the supplied description.
+     */
     public TodoCommand(String description) {
         this.description = description;
     }

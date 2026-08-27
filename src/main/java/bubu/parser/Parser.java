@@ -5,6 +5,7 @@ import bubu.command.CommandType;
 import bubu.command.DeadlineCommand;
 import bubu.command.EventCommand;
 import bubu.command.ExitCommand;
+import bubu.command.FindCommand;
 import bubu.command.ListCommand;
 import bubu.command.TodoCommand;
 import bubu.exception.BubuException;
@@ -32,9 +33,9 @@ public class Parser {
     /**
      * Extracts the command word after ignoring leading and repeated whitespace.
      *
-     * @param input command entered by the user
-     * @return the matching command type
-     * @throws BubuException if the command is unknown
+     * @param input command entered by the user.
+     * @return the matching command type.
+     * @throws BubuException if the command is unknown.
      */
     public static CommandType parse(String input) throws BubuException {
         String trimmedInput = input.trim();
@@ -54,17 +55,18 @@ public class Parser {
      * Creates an executable command for command types already moved to the
      * command hierarchy.
      *
-     * @param commandType parsed command type
-     * @param input full user input
-     * @return executable command object
-     * @throws BubuException if the command arguments are invalid
-     * @throws IllegalArgumentException if the type has not yet been extracted
+     * @param commandType parsed command type.
+     * @param input full user input.
+     * @return executable command object.
+     * @throws BubuException if the command arguments are invalid.
+     * @throws IllegalArgumentException if the type has not yet been extracted.
      */
     public static Command createCommand(CommandType commandType, String input) throws BubuException {
         return switch (commandType) {
             case LIST -> new ListCommand();
             case BYE -> new ExitCommand();
             case TODO -> new TodoCommand(parseArg(input));
+            case FIND -> new FindCommand(parseArg(input));
             case DEADLINE -> {
                 String[] info = parseDeadline(input);
                 yield new DeadlineCommand(info[0],
@@ -84,9 +86,9 @@ public class Parser {
     /**
      * Extracts the text following a command word.
      *
-     * @param input full command entered by the user
-     * @return trimmed command argument
-     * @throws BubuException if the argument is missing
+     * @param input full command entered by the user.
+     * @return trimmed command argument.
+     * @throws BubuException if the argument is missing.
      */
     public static String parseArg(String input) throws BubuException {
         String[] args = input.trim().split("\\s+", 2);
@@ -100,9 +102,9 @@ public class Parser {
     /**
      * Extracts a deadline description and its {@code /by} value.
      *
-     * @param input full deadline command
-     * @return description at index 0 and date-time text at index 1
-     * @throws BubuException if required deadline arguments are missing
+     * @param input full deadline command.
+     * @return description at index 0 and date-time text at index 1.
+     * @throws BubuException if required deadline arguments are missing.
      */
     public static String[] parseDeadline(String input) throws BubuException {
         String args = Parser.parseArg(input);
@@ -117,9 +119,9 @@ public class Parser {
     /**
      * Extracts an event description plus its {@code /from} and {@code /to} values.
      *
-     * @param input full event command
-     * @return description, start date-time text, and end date-time text
-     * @throws BubuException if required event arguments are missing
+     * @param input full event command.
+     * @return description, start date-time text, and end date-time text.
+     * @throws BubuException if required event arguments are missing.
      */
     public static String[] parseEvent(String input) throws BubuException {
         String args = Parser.parseArg(input);
@@ -144,10 +146,10 @@ public class Parser {
      * Parses a date-time or date-only value. A date-only value receives the
      * supplied default time.
      *
-     * @param input date in yyyy-MM-dd or date-time in yyyy-MM-dd HHmm format
-     * @param defaultTime time to use when the input contains only a date
-     * @return the parsed date and time
-     * @throws InvalidDateTimeException if neither accepted format matches
+     * @param input date in yyyy-MM-dd or date-time in yyyy-MM-dd HHmm format.
+     * @param defaultTime time to use when the input contains only a date.
+     * @return the parsed date and time.
+     * @throws InvalidDateTimeException if neither accepted format matches.
      */
     public static LocalDateTime parseDateTime(String input, LocalTime defaultTime) throws InvalidDateTimeException {
         try {

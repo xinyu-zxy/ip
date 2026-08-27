@@ -14,7 +14,9 @@ public class DeadlineCommand extends AddTaskCommand {
     private final String description;
     private final LocalDateTime deadline;
 
-    /** Creates a deadline command with its parsed deadline date and time. */
+    /**
+     * Creates a deadline command with its parsed deadline date and time.
+     */
     public DeadlineCommand(String description, LocalDateTime deadline) {
         this.description = description;
         this.deadline = deadline;

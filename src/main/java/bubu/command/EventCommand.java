@@ -15,7 +15,9 @@ public class EventCommand extends AddTaskCommand {
     private final LocalDateTime start;
     private final LocalDateTime end;
 
-    /** Creates an event command with its parsed start and end date-times. */
+    /**
+     * Creates an event command with its parsed start and end date-times.
+     */
     public EventCommand(String description, LocalDateTime start, LocalDateTime end) {
         this.description = description;
         this.start = start;

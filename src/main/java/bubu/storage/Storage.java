@@ -32,7 +32,7 @@ public class Storage {
     /**
      * Replaces the saved task file with the current contents of the task list.
      *
-     * @param tasks tasks to save
+     * @param tasks tasks to save.
      */
     public void save(List<Task> tasks) {
         List<String> lines = new ArrayList<>();
@@ -100,9 +100,9 @@ public class Storage {
     /**
      * Parses a line from the save file into a Task object.
      *
-     * @param line
-     * @return Task object
-     * @throws IllegalArgumentException if the line format is invalid or the task type is unknown
+     * @param line line from the save file.
+     * @return Task object.
+     * @throws IllegalArgumentException if the line format is invalid or the task type is unknown.
      */
     private Task parseTask(String line) {
         String[] parts = line.split(" \\| ");
@@ -124,9 +124,9 @@ public class Storage {
     /**
      * Parses a new date-time value or a date-only value written by an earlier version.
      *
-     * @param value stored date or date-time text
-     * @param defaultTime time used by legacy date-only entries
-     * @return parsed date and time
+     * @param value stored date or date-time text.
+     * @param defaultTime time used by legacy date-only entries.
+     * @return parsed date and time.
      */
     private LocalDateTime parseStoredDateTime(String value, LocalTime defaultTime) {
         try {
