@@ -1,3 +1,4 @@
+import Storage.Storage;
 import task.Task;
 import task.ToDo;
 import task.Deadline;
@@ -6,14 +7,13 @@ import task.Event;
 import exception.BubuException;
 import exception.MissingArgumentException;
 import exception.InvalidIndexException;
-import exception.EmptyDescriptionException;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Bubu {
-    private ArrayList<Task> tasks = new ArrayList<>();
     private final Storage storage = new Storage();
+    private ArrayList<Task> tasks = new ArrayList<>(storage.load());
     private final String line = "___________________________________________________________";
     private final String meow = " meow~";
 
