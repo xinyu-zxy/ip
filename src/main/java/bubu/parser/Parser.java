@@ -20,6 +20,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 
+/**
+ * Converts user input into command types, command objects, and date-time values.
+ */
 public class Parser {
     private static final DateTimeFormatter DATE_TIME_FORMAT =
             DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
@@ -32,7 +35,7 @@ public class Parser {
      * @return the matching command type
      * @throws BubuException if the command is unknown
      */
-    public static CommandType parse(String input) throws BubuException{
+    public static CommandType parse(String input) throws BubuException {
         String trimmedInput = input.trim();
         if (trimmedInput.isEmpty()) {
             throw new UnknownCommandException();
@@ -76,7 +79,14 @@ public class Parser {
         };
     }
 
-    public static String parseArg(String input) throws BubuException{
+    /**
+     * Extracts the text following a command word.
+     *
+     * @param input full command entered by the user
+     * @return trimmed command argument
+     * @throws BubuException if the argument is missing
+     */
+    public static String parseArg(String input) throws BubuException {
         String[] args = input.trim().split("\\s+", 2);
         if (args.length < 2 || args[1].trim().isEmpty()) {
             throw new EmptyDescriptionException(args[0]);
@@ -85,7 +95,14 @@ public class Parser {
         return args[1].trim();
     }
 
-    public static String[] parseDeadline(String input) throws BubuException{
+    /**
+     * Extracts a deadline description and its {@code /by} value.
+     *
+     * @param input full deadline command
+     * @return description at index 0 and date-time text at index 1
+     * @throws BubuException if required deadline arguments are missing
+     */
+    public static String[] parseDeadline(String input) throws BubuException {
         String args = Parser.parseArg(input);
         String[] parts = args.split(" /by ", 2);
         if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
@@ -95,7 +112,14 @@ public class Parser {
         return new String[] {parts[0].trim(), parts[1].trim()};
     }
 
-    public static String[] parseEvent(String input) throws BubuException{
+    /**
+     * Extracts an event description plus its {@code /from} and {@code /to} values.
+     *
+     * @param input full event command
+     * @return description, start date-time text, and end date-time text
+     * @throws BubuException if required event arguments are missing
+     */
+    public static String[] parseEvent(String input) throws BubuException {
         String args = Parser.parseArg(input);
 
         String[] commands = args.split(" /from ", 2);

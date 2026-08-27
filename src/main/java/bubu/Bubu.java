@@ -11,11 +11,21 @@ import bubu.task.Task;
 import bubu.task.TaskList;
 import bubu.ui.Ui;
 
+/**
+ * Coordinates command processing and the chatbot's collaborators.
+ */
 public class Bubu {
+    /** Saves task-list changes to disk. */
     private final Storage storage = new Storage();
+    /** Stores the tasks currently managed by the chatbot. */
     private final TaskList tasks = new TaskList(storage.load());
+    /** Handles all console interaction. */
     private final Ui ui = new Ui();
 
+    /**
+     * Starts and runs the main chatbot loop.
+     * Continuously accepts, parses, and executes user commands until the exit command is received.
+     */
     public void run() {
         ui.showWelcome();
 
@@ -55,6 +65,12 @@ public class Bubu {
         ui.close();
     }
 
+    /**
+     * Marks the task identified by a user-provided one-based index as complete.
+     *
+     * @param input full mark command
+     * @throws BubuException if the index is missing or invalid
+     */
     private void commandMark(String input) throws BubuException {
         String[] output = input.trim().split("\\s+", 2);
         if (output.length < 2) {
@@ -73,6 +89,12 @@ public class Bubu {
         }
     }
 
+    /**
+     * Marks the task identified by a user-provided one-based index as incomplete.
+     *
+     * @param input full unmark command
+     * @throws BubuException if the index is missing or invalid
+     */
     private void commandUnmark(String input) throws BubuException {
         String[] output = input.trim().split("\\s+", 2);
         if (output.length < 2) {
@@ -92,6 +114,12 @@ public class Bubu {
     }
 
 
+    /**
+     * Deletes the task identified by a user-provided one-based index.
+     *
+     * @param input full delete command
+     * @throws BubuException if the index is missing or invalid
+     */
     private void commandDelete(String input) throws BubuException {
         String[] output = input.trim().split("\\s+", 2);
         if (output.length < 2) {

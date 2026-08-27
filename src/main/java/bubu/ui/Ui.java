@@ -12,7 +12,9 @@ public class Ui {
     private static final String LINE = "___________________________________________________________";
     private final Scanner scanner = new Scanner(System.in);
 
-    /** Displays the chatbot greeting. */
+    /**
+     * Displays the chatbot greeting.
+     */
     public void showWelcome() {
         String banner = " /\\___/\\ \n"
                 + "(  o.o  )  Hello! I'm BUBU!\n";
@@ -22,29 +24,39 @@ public class Ui {
         System.out.println(LINE);
     }
 
-    /** Reads one command entered by the user. */
+    /**
+     * Reads one command entered by the user.
+     */
     public String readCommand() {
         return scanner.nextLine();
     }
 
-    /** Prints a separator before or after a response. */
+    /**
+     * Prints a separator before or after a response.
+     */
     public void showLine() {
         System.out.println(LINE);
     }
 
-    /** Displays the farewell message. */
+    /**
+     * Displays the farewell message.
+     */
     public void showGoodbye() {
         System.out.println("Bye. Hope to see you again soon! Meow!");
         showLine();
     }
 
-    /** Displays an error message from command processing. */
+    /**
+     * Displays an error message from command processing.
+     */
     public void showError(String message) {
         System.out.println(message);
         showLine();
     }
 
-    /** Displays all tasks in their numbered list form. */
+    /**
+     * Displays all tasks in their numbered list form.
+     */
     public void showTaskList(List<Task> tasks) {
         if (tasks.isEmpty()) {
             System.out.println("Meow! Your task list is empty.");
@@ -59,7 +71,9 @@ public class Ui {
         showLine();
     }
 
-    /** Displays confirmation that a task was added. */
+    /**
+     * Displays confirmation that a task was added.
+     */
     public void showTaskAdded(Task task, int taskCount) {
         System.out.println("Got it meow. I've added this task:");
         System.out.println("  " + task);
@@ -67,7 +81,9 @@ public class Ui {
         showLine();
     }
 
-    /** Displays confirmation that a task's completion status changed. */
+    /**
+     * Displays confirmation that a task's completion status changed.
+     */
     public void showTaskMarked(Task task, boolean isDone) {
         System.out.println(isDone
                 ? "Meow! I've marked this task as done:"
@@ -76,7 +92,9 @@ public class Ui {
         showLine();
     }
 
-    /** Displays confirmation that a task was deleted. */
+    /**
+     * Displays confirmation that a task was deleted.
+     */
     public void showTaskDeleted(Task task, int taskCount) {
         System.out.println("Meow! I've removed this task:");
         System.out.println("  " + task);
@@ -84,12 +102,16 @@ public class Ui {
         showLine();
     }
 
-    /** Closes the input stream when the chatbot exits. */
+    /**
+     * Closes the input stream when the chatbot exits.
+     */
     public void close() {
         scanner.close();
     }
 
-    /** Prints the singular or plural task-count message. */
+    /**
+     * Prints the singular or plural task-count message.
+     */
     private void showTaskCount(int taskCount) {
         String noun = taskCount == 1 ? "task" : "tasks";
         System.out.println("Now you have " + taskCount + " " + noun + " in the list. Meow!");

@@ -1,10 +1,18 @@
 package bubu.exception;
 
+/**
+ * Indicates that a task command does not contain a description.
+ */
 public class EmptyDescriptionException extends BubuException {
 
-    public EmptyDescriptionException(String message) {
+    /**
+     * Creates an error message for a command with no description.
+     *
+     * @param commandName command that requires a description
+     */
+    public EmptyDescriptionException(String commandName) {
         super("Meow! The description of a "
-                + message
+                + commandName
                 + " task cannot be empty.");
     }
 }
