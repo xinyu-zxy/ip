@@ -11,7 +11,8 @@ public class InvalidIndexException extends BubuException {
      * @param totalTasks number of tasks currently available
      */
     public InvalidIndexException(int totalTasks) {
-        super("Meow! The index you provided is invalid. Please provide a valid index between 1 and " + totalTasks + ".");
+        super("Meow! The index you provided is invalid. Please provide a valid index between 1 and "
+                + totalTasks + ".");
     }
 
     /**

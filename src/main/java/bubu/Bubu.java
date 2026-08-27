@@ -24,7 +24,8 @@ public class Bubu {
 
     /**
      * Starts and runs the main chatbot loop.
-     * Continuously accepts, parses, and executes user commands until the exit command is received.
+     * Continuously accepts, parses, and executes user commands until the exit
+     * command is received.
      */
     public void run() {
         ui.showWelcome();
@@ -36,7 +37,7 @@ public class Bubu {
 
             try {
                 CommandType command = Parser.parse(input);
-                switch(command) {
+                switch (command) {
                     case BYE:
                     case LIST:
                     case TODO:
@@ -112,8 +113,6 @@ public class Bubu {
             throw new InvalidIndexException(output[1]);
         }
     }
-
-
     /**
      * Deletes the task identified by a user-provided one-based index.
      *

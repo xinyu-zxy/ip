@@ -9,7 +9,9 @@ import java.util.Scanner;
  * Handles all console input and output for the chatbot.
  */
 public class Ui {
+    /** Divider printed between user commands and responses. */
     private static final String LINE = "___________________________________________________________";
+    /** Reads user commands from the standard input stream. */
     private final Scanner scanner = new Scanner(System.in);
 
     /**
@@ -26,6 +28,8 @@ public class Ui {
 
     /**
      * Reads one command entered by the user.
+     *
+     * @return command entered by the user
      */
     public String readCommand() {
         return scanner.nextLine();

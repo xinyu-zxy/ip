@@ -5,14 +5,14 @@ import bubu.task.Event;
 import bubu.task.Task;
 import bubu.task.ToDo;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -22,7 +22,9 @@ import java.util.List;
  * Saves the current task list in a simple text file in the project data folder.
  */
 public class Storage {
+    /** Location of the task save file, relative to the project root. */
     private static final Path FILE_PATH = Path.of("data", "bubu.txt");
+    /** Format used to persist complete date-time values. */
     private static final DateTimeFormatter DATE_TIME_FORMAT =
             DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
                     .withResolverStyle(ResolverStyle.STRICT);
@@ -53,7 +55,7 @@ public class Storage {
      * @return a single line to represent the task details.
      */
     private String format(Task task) {
-        String status = task.getStatus() ? "1" : "0";
+        String status = task.isDone() ? "1" : "0";
         if (task instanceof ToDo) {
             return "T | " + status + " | " + task.getDescription();
         }
@@ -106,7 +108,8 @@ public class Storage {
         String[] parts = line.split(" \\| ");
         Task task = switch (parts[0]) {
             case "T" -> new ToDo(parts[2]);
-            case "D" -> new Deadline(parts[2], parseStoredDateTime(parts[3], LocalTime.of(23, 59)));
+            case "D" -> new Deadline(parts[2],
+                    parseStoredDateTime(parts[3], LocalTime.of(23, 59)));
             case "E" -> new Event(parts[2], parseStoredDateTime(parts[3], LocalTime.MIDNIGHT),
                     parseStoredDateTime(parts[4], LocalTime.of(23, 59)));
             default -> throw new IllegalArgumentException("Unknown type: " + parts[0]);

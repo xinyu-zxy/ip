@@ -24,6 +24,7 @@ import java.time.format.ResolverStyle;
  * Converts user input into command types, command objects, and date-time values.
  */
 public class Parser {
+    /** Format accepted for a date-time supplied by the user. */
     private static final DateTimeFormatter DATE_TIME_FORMAT =
             DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
                     .withResolverStyle(ResolverStyle.STRICT);
@@ -66,7 +67,8 @@ public class Parser {
             case TODO -> new TodoCommand(parseArg(input));
             case DEADLINE -> {
                 String[] info = parseDeadline(input);
-                yield new DeadlineCommand(info[0], parseDateTime(info[1], LocalTime.of(23, 59)));
+                yield new DeadlineCommand(info[0],
+                        parseDateTime(info[1], LocalTime.of(23, 59)));
             }
             case EVENT -> {
                 String[] info = parseEvent(input);
