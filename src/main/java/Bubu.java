@@ -27,11 +27,10 @@ public class Bubu {
                 CommandType command = Parser.parse(input);
                 switch(command) {
                     case BYE:
-                        ui.showGoodbye();
-                        isEnd = true;
-                        break;
                     case LIST:
-                        this.commandList();
+                        Command simpleCommand = Parser.createSimpleCommand(command);
+                        simpleCommand.execute(tasks, ui, storage);
+                        isEnd = simpleCommand.isExit();
                         break;
                     case MARK:
                         this.commandMark(input);
@@ -59,10 +58,6 @@ public class Bubu {
             }
         }
         ui.close();
-    }
-
-    private void commandList() {
-        ui.showTaskList(tasks.asList());
     }
 
     private void commandMark(String input) throws BubuException {

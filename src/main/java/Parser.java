@@ -33,6 +33,23 @@ public class Parser {
         }
     }
 
+    /**
+     * Creates a command object for the read-only and exit command types moved
+     * to the command hierarchy in this iteration.
+     *
+     * @param commandType parsed command type
+     * @return executable command object
+     * @throws IllegalArgumentException if the type has not yet been extracted
+     */
+    public static Command createSimpleCommand(CommandType commandType) {
+        return switch (commandType) {
+            case LIST -> new ListCommand();
+            case BYE -> new ExitCommand();
+            default -> throw new IllegalArgumentException(
+                    "Command type has not yet been extracted: " + commandType);
+        };
+    }
+
     public static String parseArg(String input) throws BubuException{
         String[] args = input.trim().split("\\s+", 2);
         if (args.length < 2 || args[1].trim().isEmpty()) {
