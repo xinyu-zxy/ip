@@ -1,11 +1,19 @@
-import task.*;
-import exception.*;
+import Storage.Storage;
+import task.Task;
+import task.ToDo;
+import task.Deadline;
+import task.Event;
+
+import exception.BubuException;
+import exception.MissingArgumentException;
+import exception.InvalidIndexException;
 
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Bubu {
-    private ArrayList<Task> tasks = new ArrayList<>();
+    private final Storage storage = new Storage();
+    private ArrayList<Task> tasks = new ArrayList<>(storage.load());
     private final String line = "___________________________________________________________";
     private final String meow = " meow~";
 
@@ -82,16 +90,17 @@ public class Bubu {
     }
 
     private void commandMark(String input) throws BubuException {
-        String[] output = input.trim().split(" ", 2);
+        String[] output = input.trim().split("\\s+", 2);
         if (output.length < 2) {
             throw new MissingArgumentException("mark");
         }
         try {
-            int index = Integer.parseInt(input.split(" ")[1]) - 1;
+            int index = Integer.parseInt(output[1]) - 1;
             if (index < 0 || index >= this.tasks.size()) {
                 throw new InvalidIndexException(this.tasks.size());
             }
             this.tasks.get(index).markAsDone();
+            this.storage.save(this.tasks);
             System.out.println("Meow! I've marked this task as done:");
             System.out.println(this.tasks.get(index).toString());
             System.out.println(line);
@@ -101,16 +110,17 @@ public class Bubu {
     }
 
     private void commandUnmark(String input) throws BubuException {
-        String[] output = input.trim().split(" ", 2);
+        String[] output = input.trim().split("\\s+", 2);
         if (output.length < 2) {
             throw new MissingArgumentException("unmark");
         }
         try {
-            int index = Integer.parseInt(input.split(" ")[1]) - 1;
+            int index = Integer.parseInt(output[1]) - 1;
             if (index < 0 || index >= this.tasks.size()) {
                 throw new InvalidIndexException(this.tasks.size());
             }
             this.tasks.get(index).markAsUndone();
+            this.storage.save(this.tasks);
             System.out.println("Meow! I've marked this task as not done yet:");
             System.out.println(this.tasks.get(index).toString());
             System.out.println(line);
@@ -140,6 +150,7 @@ public class Bubu {
 
     private void addTask(Task task) {
         this.tasks.add(task);
+        this.storage.save(this.tasks);
         System.out.println("Got it meow. I've added this task:");
         System.out.println("  " + task);
 
@@ -152,18 +163,19 @@ public class Bubu {
     }
 
     private void commandDelete(String input) throws BubuException {
-        String[] output = input.trim().split(" ", 2);
+        String[] output = input.trim().split("\\s+", 2);
         if (output.length < 2) {
             throw new MissingArgumentException("delete");
         }
 
         try {
-            int index = Integer.parseInt(input.split(" ")[1]) - 1;
+            int index = Integer.parseInt(output[1]) - 1;
             if (index < 0 || index >= this.tasks.size()) {
                 throw new InvalidIndexException(this.tasks.size());
             }
 
             Task task = this.tasks.remove(index);
+            this.storage.save(this.tasks);
             System.out.println("Meow! I've removed this task:");
             System.out.println("  " + task.toString());
 
