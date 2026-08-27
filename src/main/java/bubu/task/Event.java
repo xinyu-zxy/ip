@@ -18,9 +18,9 @@ public class Event extends Task {
     /**
      * Creates an event task.
      *
-     * @param description event description
-     * @param start event start date and time
-     * @param end event end date and time
+     * @param description event description.
+     * @param start event start date and time.
+     * @param end event end date and time.
      */
     public Event(String description, LocalDateTime start, LocalDateTime end) {
         super(description);
@@ -31,7 +31,7 @@ public class Event extends Task {
     /**
      * Returns the event start time entered by the user.
      *
-     * @return event start time
+     * @return event start time.
      */
     public LocalDateTime getStart() {
         return this.start;
@@ -40,7 +40,7 @@ public class Event extends Task {
     /**
      * Returns the event end time entered by the user.
      *
-     * @return event end time
+     * @return event end time.
      */
     public LocalDateTime getEnd() {
         return this.end;

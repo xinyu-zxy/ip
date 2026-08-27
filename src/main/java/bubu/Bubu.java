@@ -42,6 +42,7 @@ public class Bubu {
                     case TODO:
                     case DEADLINE:
                     case EVENT:
+                    case FIND:
                         Command extractedCommand = Parser.createCommand(command, input);
                         extractedCommand.execute(tasks, ui, storage);
                         isEnd = extractedCommand.isExit();
@@ -68,8 +69,8 @@ public class Bubu {
     /**
      * Marks the task identified by a user-provided one-based index as complete.
      *
-     * @param input full mark command
-     * @throws BubuException if the index is missing or invalid
+     * @param input full mark command.
+     * @throws BubuException if the index is missing or invalid.
      */
     private void commandMark(String input) throws BubuException {
         String[] output = input.trim().split("\\s+", 2);
@@ -92,8 +93,8 @@ public class Bubu {
     /**
      * Marks the task identified by a user-provided one-based index as incomplete.
      *
-     * @param input full unmark command
-     * @throws BubuException if the index is missing or invalid
+     * @param input full unmark command.
+     * @throws BubuException if the index is missing or invalid.
      */
     private void commandUnmark(String input) throws BubuException {
         String[] output = input.trim().split("\\s+", 2);
@@ -117,8 +118,8 @@ public class Bubu {
     /**
      * Deletes the task identified by a user-provided one-based index.
      *
-     * @param input full delete command
-     * @throws BubuException if the index is missing or invalid
+     * @param input full delete command.
+     * @throws BubuException if the index is missing or invalid.
      */
     private void commandDelete(String input) throws BubuException {
         String[] output = input.trim().split("\\s+", 2);
