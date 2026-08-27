@@ -6,7 +6,7 @@ import java.util.Locale;
 
 public class Event extends Task {
     private static final DateTimeFormatter DISPLAY_FORMAT =
-            DateTimeFormatter.ofPattern("MMM dd yyyy, h:mma");
+            DateTimeFormatter.ofPattern("MMM dd yyyy, h:mma", Locale.ENGLISH);
     private LocalDateTime start;
     private LocalDateTime end;
 

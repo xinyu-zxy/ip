@@ -1,63 +1,40 @@
 import Storage.Storage;
 import task.Task;
-import task.ToDo;
-import task.Deadline;
-import task.Event;
 
 import exception.BubuException;
 import exception.MissingArgumentException;
 import exception.InvalidIndexException;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Scanner;
-
 public class Bubu {
     private final Storage storage = new Storage();
-    private ArrayList<Task> tasks = new ArrayList<>(storage.load());
-    private static final String LINE = "___________________________________________________________";
+    private final TaskList tasks = new TaskList(storage.load());
+    private final Ui ui = new Ui();
 
     public void run() {
-        Scanner scanner = new Scanner(System.in);
-        String banner = " /\\___/\\ \n"
-                + "(  o.o  )  Hello! I'm BUBU!\n";
-
-        System.out.println(LINE);
-        System.out.println(banner);
-        System.out.println("What can I do for you? Meow!");
-        System.out.println(LINE);
+        ui.showWelcome();
 
         boolean isEnd = false;
         while (!isEnd) {
-            String input = scanner.nextLine();
-            System.out.println(LINE);
+            String input = ui.readCommand();
+            ui.showLine();
 
             try {
                 CommandType command = Parser.parse(input);
                 switch(command) {
                     case BYE:
-                        System.out.println("Bye. Hope to see you again soon! Meow!");
-                        System.out.println(LINE);
-                        isEnd = true;
-                        break;
                     case LIST:
-                        this.commandList();
+                    case TODO:
+                    case DEADLINE:
+                    case EVENT:
+                        Command extractedCommand = Parser.createCommand(command, input);
+                        extractedCommand.execute(tasks, ui, storage);
+                        isEnd = extractedCommand.isExit();
                         break;
                     case MARK:
                         this.commandMark(input);
                         break;
                     case UNMARK:
                         this.commandUnmark(input);
-                        break;
-                    case TODO:
-                        this.commandToDo(input);
-                        break;
-                    case DEADLINE:
-                        this.commandDeadline(input);
-                        break;
-                    case EVENT:
-                        this.commandEvent(input);
                         break;
                     case DELETE:
                         this.commandDelete(input);
@@ -66,28 +43,10 @@ public class Bubu {
                         break;
                 }
             } catch (BubuException e) {
-                System.out.println(e.getMessage());
-                System.out.println(LINE);
+                ui.showError(e.getMessage());
             }
         }
-        scanner.close();
-    }
-
-    private void commandList() {
-        int len = this.tasks.size();
-        if (len == 0) {
-            System.out.println("Meow! Your task list is empty.");
-        } else {
-            if (len == 1) {
-                System.out.println("Meow! Here is the task in your list:");
-            } else {
-                System.out.println("Meow! Here are the tasks in your list:");
-            }
-            for (int i = 0; i < this.tasks.size(); i++) {
-                System.out.println((i + 1) + ". " + this.tasks.get(i));
-            }
-        }
-        System.out.println(LINE);
+        ui.close();
     }
 
     private void commandMark(String input) throws BubuException {
@@ -97,14 +56,12 @@ public class Bubu {
         }
         try {
             int index = Integer.parseInt(output[1]) - 1;
-            if (index < 0 || index >= this.tasks.size()) {
+            if (!tasks.hasIndex(index)) {
                 throw new InvalidIndexException(this.tasks.size());
             }
             this.tasks.get(index).markAsDone();
-            this.storage.save(this.tasks);
-            System.out.println("Meow! I've marked this task as done:");
-            System.out.println(this.tasks.get(index).toString());
-            System.out.println(LINE);
+            this.storage.save(tasks.asList());
+            ui.showTaskMarked(this.tasks.get(index), true);
         } catch (NumberFormatException e) {
             throw new InvalidIndexException(output[1]);
         }
@@ -117,54 +74,17 @@ public class Bubu {
         }
         try {
             int index = Integer.parseInt(output[1]) - 1;
-            if (index < 0 || index >= this.tasks.size()) {
+            if (!tasks.hasIndex(index)) {
                 throw new InvalidIndexException(this.tasks.size());
             }
             this.tasks.get(index).markAsUndone();
-            this.storage.save(this.tasks);
-            System.out.println("Meow! I've marked this task as not done yet:");
-            System.out.println(this.tasks.get(index).toString());
-            System.out.println(LINE);
+            this.storage.save(tasks.asList());
+            ui.showTaskMarked(this.tasks.get(index), false);
         } catch (NumberFormatException e) {
             throw new InvalidIndexException(output[1]);
         }
     }
 
-
-    private void commandToDo(String input) throws BubuException {
-        String description = Parser.parseArg(input);
-        ToDo task = new ToDo(description);
-        this.addTask(task);
-    }
-
-    private void commandDeadline(String input) throws BubuException {
-        String[] info = Parser.parseDeadline(input);
-        LocalDateTime deadlineDateTime = Parser.parseDateTime(info[1], LocalTime.of(23, 59));
-        Deadline deadline = new Deadline(info[0].trim(), deadlineDateTime);
-        this.addTask(deadline);
-    }
-
-    private void commandEvent(String input) throws BubuException {
-        String[] info = Parser.parseEvent(input);
-        LocalDateTime start = Parser.parseDateTime(info[1], LocalTime.MIDNIGHT);
-        LocalDateTime end = Parser.parseDateTime(info[2], LocalTime.of(23, 59));
-        Event event = new Event(info[0].trim(), start, end);
-        this.addTask(event);
-    }
-
-    private void addTask(Task task) {
-        this.tasks.add(task);
-        this.storage.save(this.tasks);
-        System.out.println("Got it meow. I've added this task:");
-        System.out.println("  " + task);
-
-        if (this.tasks.size() < 2) {
-            System.out.println(String.format("Now you have %d task in the list. Meow!", this.tasks.size()));
-        } else {
-            System.out.println(String.format("Now you have %d tasks in the list. Meow!", this.tasks.size()));
-        }
-        System.out.println(LINE);
-    }
 
     private void commandDelete(String input) throws BubuException {
         String[] output = input.trim().split("\\s+", 2);
@@ -174,21 +94,13 @@ public class Bubu {
 
         try {
             int index = Integer.parseInt(output[1]) - 1;
-            if (index < 0 || index >= this.tasks.size()) {
+            if (!tasks.hasIndex(index)) {
                 throw new InvalidIndexException(this.tasks.size());
             }
 
             Task task = this.tasks.remove(index);
-            this.storage.save(this.tasks);
-            System.out.println("Meow! I've removed this task:");
-            System.out.println("  " + task.toString());
-
-            if (this.tasks.size() == 1) {
-                System.out.println("Now you have 1 task in the list. Meow!");
-            } else {
-                System.out.println(String.format("Now you have %d tasks in the list. Meow!", this.tasks.size()));
-            }
-            System.out.println(LINE);
+            this.storage.save(tasks.asList());
+            ui.showTaskDeleted(task, tasks.size());
         } catch (NumberFormatException e) {
             throw new InvalidIndexException(output[1]);
         }
