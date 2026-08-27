@@ -1,9 +1,16 @@
-import exception.BubuException;
-import exception.MissingArgumentException;
-import exception.EmptyDescriptionException;
-import exception.UnknownCommandException;
+import exception.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 public class Parser {
+    private static final DateTimeFormatter DATE_TIME_FORMAT =
+            DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
+                    .withResolverStyle(ResolverStyle.STRICT);
 
     /**
      * Extracts the command word after ignoring leading and repeated whitespace.
@@ -62,5 +69,26 @@ public class Parser {
                 timeLine[0].trim(),
                 timeLine[1].trim()};
         return output;
+    }
+
+    /**
+     * Parses a date-time or date-only value. A date-only value receives the
+     * supplied default time.
+     *
+     * @param input date in yyyy-MM-dd or date-time in yyyy-MM-dd HHmm format
+     * @param defaultTime time to use when the input contains only a date
+     * @return the parsed date and time
+     * @throws InvalidDateTimeException if neither accepted format matches
+     */
+    public static LocalDateTime parseDateTime(String input, LocalTime defaultTime) throws InvalidDateTimeException {
+        try {
+            return LocalDateTime.parse(input, DATE_TIME_FORMAT);
+        } catch (DateTimeParseException ignored) {
+            try {
+                return LocalDate.parse(input).atTime(defaultTime);
+            } catch (DateTimeParseException e) {
+                throw new InvalidDateTimeException();
+            }
+        }
     }
 }

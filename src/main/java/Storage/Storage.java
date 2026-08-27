@@ -5,7 +5,12 @@ import task.Event;
 import task.Task;
 import task.ToDo;
 
-import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -18,6 +23,9 @@ import java.util.List;
  */
 public class Storage {
     private static final Path FILE_PATH = Path.of("data", "bubu.txt");
+    private static final DateTimeFormatter DATE_TIME_FORMAT =
+            DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
+                    .withResolverStyle(ResolverStyle.STRICT);
 
     /**
      * Replaces the saved task file with the current contents of the task list.
@@ -51,11 +59,12 @@ public class Storage {
         }
         if (task instanceof Deadline deadline) {
             return "D | " + status + " | " + deadline.getDescription()
-                    + " | " + deadline.getDeadline();
+                    + " | " + deadline.getDeadline().format(DATE_TIME_FORMAT);
         }
         if (task instanceof Event event) {
             return "E | " + status + " | " + event.getDescription()
-                    + " | " + event.getStart() + " | " + event.getEnd();
+                    + " | " + event.getStart().format(DATE_TIME_FORMAT)
+                    + " | " + event.getEnd().format(DATE_TIME_FORMAT);
         }
         throw new IllegalArgumentException("Unsupported task type: " + task.getClass().getName() + ". Meow!");
     }
@@ -97,8 +106,9 @@ public class Storage {
         String[] parts = line.split(" \\| ");
         Task task = switch (parts[0]) {
             case "T" -> new ToDo(parts[2]);
-            case "D" -> new Deadline(parts[2], parts[3]);
-            case "E" -> new Event(parts[2], parts[3], parts[4]);
+            case "D" -> new Deadline(parts[2], parseStoredDateTime(parts[3], LocalTime.of(23, 59)));
+            case "E" -> new Event(parts[2], parseStoredDateTime(parts[3], LocalTime.MIDNIGHT),
+                    parseStoredDateTime(parts[4], LocalTime.of(23, 59)));
             default -> throw new IllegalArgumentException("Unknown type: " + parts[0]);
         };
 
@@ -106,5 +116,20 @@ public class Storage {
             task.markAsDone();
         }
         return task;
+    }
+
+    /**
+     * Parses a new date-time value or a date-only value written by an earlier version.
+     *
+     * @param value stored date or date-time text
+     * @param defaultTime time used by legacy date-only entries
+     * @return parsed date and time
+     */
+    private LocalDateTime parseStoredDateTime(String value, LocalTime defaultTime) {
+        try {
+            return LocalDateTime.parse(value, DATE_TIME_FORMAT);
+        } catch (DateTimeParseException ignored) {
+            return LocalDate.parse(value).atTime(defaultTime);
+        }
     }
 }

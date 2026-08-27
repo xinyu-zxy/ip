@@ -1,11 +1,16 @@
 package task;
 
-public class Event extends Task {
-    private String day;
-    private String start;
-    private String end;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
-    public Event(String description, String start, String end) {
+public class Event extends Task {
+    private static final DateTimeFormatter DISPLAY_FORMAT =
+            DateTimeFormatter.ofPattern("MMM dd yyyy, h:mma");
+    private LocalDateTime start;
+    private LocalDateTime end;
+
+    public Event(String description, LocalDateTime start, LocalDateTime end) {
         super(description);
         this.start = start;
         this.end = end;
@@ -16,7 +21,7 @@ public class Event extends Task {
      *
      * @return event start time
      */
-    public String getStart() {
+    public LocalDateTime getStart() {
         return this.start;
     }
 
@@ -25,7 +30,7 @@ public class Event extends Task {
      *
      * @return event end time
      */
-    public String getEnd() {
+    public LocalDateTime getEnd() {
         return this.end;
     }
 
@@ -34,9 +39,9 @@ public class Event extends Task {
         return "[E]"
                 + super.toString()
                 + " (from: "
-                + this.start
+                + this.start.format(DISPLAY_FORMAT)
                 + " to: "
-                + this.end
+                + this.end.format(DISPLAY_FORMAT)
                 + ")";
     }
 }
