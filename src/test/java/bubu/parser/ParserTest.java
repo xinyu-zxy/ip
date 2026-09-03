@@ -1,20 +1,22 @@
 package bubu.parser;
 
-import bubu.exception.InvalidDateTimeException;
-import bubu.exception.MissingArgumentException;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
+import org.junit.jupiter.api.Test;
+
+import bubu.exception.BubuException;
+import bubu.exception.InvalidDateTimeException;
+import bubu.exception.MissingArgumentException;
+
 public class ParserTest {
 
     @Test
-    public void parseDeadline_validAndInvalidInput() throws Exception {
+    void parseDeadline_validAndInvalidInput_returnsExpectedOrThrows() throws BubuException {
         // Test normal parsing with description and date
         String[] result = Parser.parseDeadline("deadline return book /by 2026-08-30 1800");
         assertArrayEquals(new String[]{"return book", "2026-08-30 1800"}, result);
@@ -24,7 +26,7 @@ public class ParserTest {
     }
 
     @Test
-    public void parseDateTime_validAndInvalidFormats() throws Exception {
+    void parseDateTime_validAndInvalidFormats_returnsExpectedOrThrows() throws Exception {
         LocalDateTime withTime = Parser.parseDateTime("2026-08-30 1800", LocalTime.of(23, 59));
         assertEquals(LocalDateTime.of(2026, 8, 30, 18, 0), withTime);
 

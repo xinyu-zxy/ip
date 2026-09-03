@@ -1,5 +1,12 @@
 package bubu.parser;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+
 import bubu.command.Command;
 import bubu.command.CommandType;
 import bubu.command.DeadlineCommand;
@@ -13,13 +20,6 @@ import bubu.exception.EmptyDescriptionException;
 import bubu.exception.InvalidDateTimeException;
 import bubu.exception.MissingArgumentException;
 import bubu.exception.UnknownCommandException;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 
 /**
  * Converts user input into command types, command objects, and date-time values.
@@ -37,7 +37,7 @@ public class Parser {
      * @return the matching command type.
      * @throws BubuException if the command is unknown.
      */
-    public static CommandType parse(String input) throws BubuException {
+    public static CommandType parseCommandType(String input) throws BubuException {
         String trimmedInput = input.trim();
         if (trimmedInput.isEmpty()) {
             throw new UnknownCommandException();

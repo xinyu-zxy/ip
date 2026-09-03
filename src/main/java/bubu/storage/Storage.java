@@ -1,22 +1,22 @@
 package bubu.storage;
 
-import bubu.task.Deadline;
-import bubu.task.Event;
-import bubu.task.Task;
-import bubu.task.ToDo;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import bubu.task.Deadline;
+import bubu.task.Event;
+import bubu.task.Task;
+import bubu.task.ToDo;
 
 /**
  * Saves the current task list in a simple text file in the project data folder.
@@ -34,7 +34,7 @@ public class Storage {
      *
      * @param tasks tasks to save.
      */
-    public void save(List<Task> tasks) {
+    public void saveTasks(List<Task> tasks) {
         List<String> lines = new ArrayList<>();
         for (Task task : tasks) {
             lines.add(format(task));

@@ -1,9 +1,9 @@
 package bubu.ui;
 
-import bubu.task.Task;
-
 import java.util.List;
 import java.util.Scanner;
+
+import bubu.task.Task;
 
 /**
  * Handles all console input and output for the chatbot.

@@ -57,7 +57,7 @@ public abstract class Task {
      * @return true if this task is complete.
      */
     public boolean getStatus() {
-        return isDone;
+        return this.isDone;
     }
 
     @Override

@@ -1,14 +1,15 @@
 package bubu.task;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ToDoTest {
+import org.junit.jupiter.api.Test;
+
+class ToDoTest {
 
     @Test
-    public void markAsDone_success() {
+    void markAsDone_uncompletedTask_marksAsDone() {
         ToDo todo = new ToDo("read book");
         assertFalse(todo.isDone());
 
@@ -17,7 +18,7 @@ public class ToDoTest {
     }
 
     @Test
-    public void toString_correctFormat() {
+    void toString_validTask_returnsFormattedString() {
         ToDo todo = new ToDo("read book");
         assertEquals("[T][ ] read book", todo.toString());
 

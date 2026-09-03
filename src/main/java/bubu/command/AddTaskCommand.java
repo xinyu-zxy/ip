@@ -19,7 +19,7 @@ public abstract class AddTaskCommand extends Command {
      */
     protected void addTask(Task task, TaskList tasks, Ui ui, Storage storage) {
         tasks.add(task);
-        storage.save(tasks.asList());
+        storage.saveTasks(tasks.asList());
         ui.showTaskAdded(task, tasks.size());
     }
 }

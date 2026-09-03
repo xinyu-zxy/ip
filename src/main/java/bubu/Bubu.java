@@ -36,7 +36,7 @@ public class Bubu {
             ui.showLine();
 
             try {
-                CommandType command = Parser.parse(input);
+                CommandType command = Parser.parseCommandType(input);
                 switch (command) {
                     case BYE:
                     case LIST:
@@ -84,7 +84,7 @@ public class Bubu {
                 throw new InvalidIndexException(this.tasks.size());
             }
             this.tasks.get(index).markAsDone();
-            this.storage.save(tasks.asList());
+            this.storage.saveTasks(tasks.asList());
             ui.showTaskMarked(this.tasks.get(index), true);
         } catch (NumberFormatException e) {
             throw new InvalidIndexException(output[1]);
@@ -108,7 +108,7 @@ public class Bubu {
                 throw new InvalidIndexException(this.tasks.size());
             }
             this.tasks.get(index).markAsUndone();
-            this.storage.save(tasks.asList());
+            this.storage.saveTasks(tasks.asList());
             ui.showTaskMarked(this.tasks.get(index), false);
         } catch (NumberFormatException e) {
             throw new InvalidIndexException(output[1]);
@@ -133,7 +133,7 @@ public class Bubu {
             }
 
             Task task = this.tasks.remove(index);
-            this.storage.save(tasks.asList());
+            this.storage.saveTasks(tasks.asList());
             ui.showTaskDeleted(task, tasks.size());
         } catch (NumberFormatException e) {
             throw new InvalidIndexException(output[1]);
