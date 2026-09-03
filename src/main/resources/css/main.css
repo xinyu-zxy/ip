@@ -1,0 +1,52 @@
+.root {
+    /* Warm cream and ginger colours inspired by a cat's coat. */
+    main-color: #fff4e6;
+    -fx-background-color: main-color;
+}
+
+.text-field {
+    -fx-background-color: #fffdf8;
+    -fx-border-color: #d98b45;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-font: 20px "Arial";
+}
+
+.button {
+    -fx-background-color: #d97736;
+    -fx-background-radius: 8px;
+    -fx-text-fill: white;
+    -fx-font: bold 16px "Arial";
+}
+
+.button:hover {
+    -fx-background-color: #b45309;
+    -fx-font-size: 18px;
+}
+
+.button:pressed {
+    -fx-background-color: #92400e;
+}
+
+.scroll-pane,
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar {
+    -fx-font-size: 10px;  /* Change width of scroll bar. */
+    -fx-background-color: main-color;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #d98b45;
+    -fx-background-radius: 1em;
+}
+
+/* Hides the increment and decrement buttons. */
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+

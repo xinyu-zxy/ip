@@ -1,142 +1,150 @@
 package bubu.ui;
 
 import java.util.List;
-import java.util.Scanner;
 
 import bubu.task.Task;
 
 /**
- * Handles all console input and output for the chatbot.
+ * Formats chatbot responses for display in the graphical user interface.
  */
 public class Ui {
-    /** Divider printed between user commands and responses. */
-    private static final String LINE = "___________________________________________________________";
-    /** Reads user commands from the standard input stream. */
-    private final Scanner scanner = new Scanner(System.in);
+    /** Stores the response generated for the most recent user command. */
+    private final StringBuilder response = new StringBuilder();
 
     /**
-     * Displays the chatbot greeting.
+     * Appends the chatbot greeting to the current response.
      */
     public void showWelcome() {
         String banner = " /\\___/\\ \n"
                 + "(  o.o  )  Hello! I'm BUBU!\n";
-        System.out.println(LINE);
-        System.out.println(banner);
-        System.out.println("What can I do for you? Meow!");
-        System.out.println(LINE);
+        response.append(banner)
+                .append("What can I do for you? Meow!")
+                .append(System.lineSeparator());
     }
 
     /**
-     * Reads one command entered by the user.
-     *
-     * @return command entered by the user
-     */
-    public String readCommand() {
-        return scanner.nextLine();
-    }
-
-    /**
-     * Prints a separator before or after a response.
-     */
-    public void showLine() {
-        System.out.println(LINE);
-    }
-
-    /**
-     * Displays the farewell message.
+     * Appends the farewell message to the current response.
      */
     public void showGoodbye() {
-        System.out.println("Bye. Hope to see you again soon! Meow!");
-        showLine();
+        response.append("Bye. Hope to see you again soon! Meow!")
+                .append(System.lineSeparator());
     }
 
     /**
-     * Displays an error message from command processing.
+     * Appends an error message from command processing to the current response.
      */
     public void showError(String message) {
-        System.out.println(message);
-        showLine();
+        response.append(message)
+                .append(System.lineSeparator());
     }
 
     /**
-     * Displays all tasks in their numbered list form.
+     * Appends all tasks in their numbered list form to the current response.
      */
     public void showTaskList(List<Task> tasks) {
         if (tasks.isEmpty()) {
-            System.out.println("Meow! Your task list is empty.");
+            response.append("Meow! Your task list is empty.")
+                    .append(System.lineSeparator());
         } else {
-            System.out.println(tasks.size() == 1
+            response.append(tasks.size() == 1
                     ? "Meow! Here is the task in your list:"
-                    : "Meow! Here are the tasks in your list:");
+                    : "Meow! Here are the tasks in your list:")
+                    .append(System.lineSeparator());
             for (int index = 0; index < tasks.size(); index++) {
-                System.out.println((index + 1) + ". " + tasks.get(index));
+                response.append(index + 1)
+                        .append(". ")
+                        .append(tasks.get(index))
+                        .append(System.lineSeparator());
             }
         }
-        showLine();
     }
 
     /**
-     * Displays confirmation that a task was added.
+     * Appends confirmation that a task was added to the current response.
      */
     public void showTaskAdded(Task task, int taskCount) {
-        System.out.println("Got it meow. I've added this task:");
-        System.out.println("  " + task);
+        response.append("Got it meow. I've added this task:")
+                .append(System.lineSeparator())
+                .append("  ")
+                .append(task)
+                .append(System.lineSeparator());
         showTaskCount(taskCount);
-        showLine();
     }
 
     /**
-     * Displays confirmation that a task's completion status changed.
+     * Appends confirmation that a task's completion status changed to the current response.
      */
     public void showTaskMarked(Task task, boolean isDone) {
-        System.out.println(isDone
+        response.append(isDone
                 ? "Meow! I've marked this task as done:"
-                : "Meow! I've marked this task as not done yet:");
-        System.out.println(task);
-        showLine();
+                : "Meow! I've marked this task as not done yet:")
+                .append(System.lineSeparator())
+                .append("  ")
+                .append(task)
+                .append(System.lineSeparator());
     }
 
     /**
-     * Displays confirmation that a task was deleted.
+     * Appends confirmation that a task was deleted to the current response.
      */
     public void showTaskDeleted(Task task, int taskCount) {
-        System.out.println("Meow! I've removed this task:");
-        System.out.println("  " + task);
+        response.append("Meow! I've removed this task:")
+                .append(System.lineSeparator())
+                .append("  ")
+                .append(task)
+                .append(System.lineSeparator());
         showTaskCount(taskCount);
-        showLine();
     }
 
     /**
-     * Closes the input stream when the chatbot exits.
-     */
-    public void close() {
-        scanner.close();
-    }
-
-    /**
-     * Prints the singular or plural task-count message.
+     * Appends the singular or plural task-count message to the current response.
      */
     private void showTaskCount(int taskCount) {
         String noun = taskCount == 1 ? "task" : "tasks";
-        System.out.println("Now you have " + taskCount + " " + noun + " in the list. Meow!");
+        response.append("Now you have ")
+                .append(taskCount)
+                .append(" ")
+                .append(noun)
+                .append(" in the list. Meow!")
+                .append(System.lineSeparator());
     }
 
     /**
-     * Displays all matchings tasks that match the search keyword.
+     * Appends all matching tasks that match the search keyword to the current response.
      *
      * @param tasks list of matching tasks.
      */
     public void showMatchingTasks(List<Task> tasks) {
         if (tasks.isEmpty()) {
-            System.out.println("Meow! No matching tasks found.");
+            response.append("Meow! No matching tasks found.")
+                    .append(System.lineSeparator());
         } else {
-            System.out.println(tasks.size() == 1
+            response.append(tasks.size() == 1
                     ? "Meow! Here is the matching task in your list:"
-                    : "Meow! Here are the matching tasks in your list:");
+                    : "Meow! Here are the matching tasks in your list:")
+                    .append(System.lineSeparator());
             for (int index = 0; index < tasks.size(); index++) {
-                System.out.println((index + 1) + ". " + tasks.get(index));
+                response.append(index + 1)
+                        .append(". ")
+                        .append(tasks.get(index))
+                        .append(System.lineSeparator());
             }
         }
-        showLine();
+    }
+
+    /**
+     * Clears the response buffer to prepare for the next command.
+     */
+    public void clearResponse() {
+        response.setLength(0);
+    }
+
+    /**
+     * Returns the current response as a string.
+     *
+     * @return current response.
+     */
+    public String getResponse() {
+        return response.toString();
     }
 }

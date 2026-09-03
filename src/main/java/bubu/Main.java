@@ -1,16 +1,33 @@
 package bubu;
 
+import java.io.IOException;
+
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+
 /**
- * Starts the Bubu chatbot application.
+ * A GUI for Bubu using FXML.
  */
-public class Main {
-    /**
-     * Creates and runs the chatbot.
-     *
-     * @param args command-line arguments, which are not used.
-     */
-    public static void main(String[] args) {
-        Bubu bubu = new Bubu();
-        bubu.run();
+public class Main extends Application {
+
+    private Bubu bubu = new Bubu();
+
+    @Override
+    public void start(Stage stage) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
+            AnchorPane ap = fxmlLoader.load();
+            Scene scene = new Scene(ap);
+            stage.setScene(scene);
+            stage.setMinHeight(220);
+            stage.setMinWidth(417);
+            fxmlLoader.<MainWindow>getController().setBubu(bubu);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
