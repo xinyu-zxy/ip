@@ -23,51 +23,6 @@ public class Bubu {
     private final Ui ui = new Ui();
 
     /**
-     * Starts and runs the main chatbot loop.
-     * Continuously accepts, parses, and executes user commands until the exit
-     * command is received.
-     */
-    public void run() {
-        ui.showWelcome();
-
-        boolean isEnd = false;
-        while (!isEnd) {
-            String input = ui.readCommand();
-            ui.showLine();
-
-            try {
-                CommandType command = Parser.parseCommandType(input);
-                switch (command) {
-                    case BYE:
-                    case LIST:
-                    case TODO:
-                    case DEADLINE:
-                    case EVENT:
-                    case FIND:
-                        Command extractedCommand = Parser.createCommand(command, input);
-                        extractedCommand.execute(tasks, ui, storage);
-                        isEnd = extractedCommand.isExit();
-                        break;
-                    case MARK:
-                        this.commandMark(input);
-                        break;
-                    case UNMARK:
-                        this.commandUnmark(input);
-                        break;
-                    case DELETE:
-                        this.commandDelete(input);
-                        break;
-                    default:
-                        break;
-                }
-            } catch (BubuException e) {
-                ui.showError(e.getMessage());
-            }
-        }
-        ui.close();
-    }
-
-    /**
      * Marks the task identified by a user-provided one-based index as complete.
      *
      * @param input full mark command.
@@ -138,5 +93,45 @@ public class Bubu {
         } catch (NumberFormatException e) {
             throw new InvalidIndexException(output[1]);
         }
+    }
+
+    /**
+     * Generates a response for the user's chat message.
+     *
+     * @param input the user's chat message.
+     * @return the chatbot's response.
+     */
+    public String getResponse(String input) {
+        ui.clearResponse();
+
+        try {
+            CommandType command = Parser.parseCommandType(input);
+            switch (command) {
+                case BYE:
+                case LIST:
+                case TODO:
+                case DEADLINE:
+                case EVENT:
+                case FIND:
+                    Command extractedCommand = Parser.createCommand(command, input);
+                    extractedCommand.execute(tasks, ui, storage);
+                    break;
+                case MARK:
+                    this.commandMark(input);
+                    break;
+                case UNMARK:
+                    this.commandUnmark(input);
+                    break;
+                case DELETE:
+                    this.commandDelete(input);
+                    break;
+                default:
+                    break;
+            }
+        } catch (BubuException e) {
+            ui.showError(e.getMessage());
+        }
+
+        return ui.getResponse();
     }
 }
