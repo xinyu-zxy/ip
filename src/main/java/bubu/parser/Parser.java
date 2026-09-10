@@ -139,7 +139,11 @@ public class Parser {
             throw new MissingArgumentException(COMMAND_NAME_EVENT);
         }
 
-        return new String[] {parts[0].trim(), timeLine[0].trim(), timeLine[1].trim()};
+        String[] output = new String[] {parts[0].trim(),
+                timeLine[0].trim(),
+                timeLine[1].trim()};
+        assert output.length == 3 : "Parsed event must yield description, start, and end";
+        return output;
     }
 
     /**

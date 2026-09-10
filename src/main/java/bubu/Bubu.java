@@ -36,6 +36,7 @@ public class Bubu {
      * @throws BubuException If the index is missing or invalid.
      */
     private void commandMark(String input) throws BubuException {
+        assert input != null : "Input cannot be null";
         int index = extractValidIndex(input, COMMAND_NAME_MARK);
         Task task = this.tasks.get(index);
         task.markAsDone();
@@ -50,6 +51,7 @@ public class Bubu {
      * @throws BubuException If the index is missing or invalid.
      */
     private void commandUnmark(String input) throws BubuException {
+        assert input != null : "Input cannot be null";
         int index = extractValidIndex(input, COMMAND_NAME_UNMARK);
         Task task = this.tasks.get(index);
         task.markAsUndone();
@@ -64,6 +66,7 @@ public class Bubu {
      * @throws BubuException If the index is missing or invalid.
      */
     private void commandDelete(String input) throws BubuException {
+        assert input != null : "Input cannot be null";
         int index = extractValidIndex(input, COMMAND_NAME_DELETE);
         Task removedTask = this.tasks.remove(index);
         this.storage.saveTasks(tasks.asList());
@@ -79,6 +82,8 @@ public class Bubu {
      * @throws BubuException If the argument is missing, non-numeric, or out of range.
      */
     private int extractValidIndex(String input, String commandName) throws BubuException {
+        assert input != null : "Input cannot be null";
+        assert commandName != null : "Command name cannot be null";
         String[] parts = input.trim().split(REGEX_WHITESPACE, 2);
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
             throw new MissingArgumentException(commandName);
@@ -108,6 +113,7 @@ public class Bubu {
 
         try {
             CommandType commandType = Parser.parseCommandType(input);
+            assert commandType != null : "CommandType must not be null after parsing";
             executeCommand(commandType, input);
         } catch (BubuException e) {
             ui.showError(e.getMessage());
@@ -120,6 +126,8 @@ public class Bubu {
      * Dispatches command execution based on the parsed command type.
      */
     private void executeCommand(CommandType commandType, String input) throws BubuException {
+        assert commandType != null : "CommandType cannot be null";
+        assert input != null : "Input cannot be null";
         switch (commandType) {
             case BYE:
             case LIST:
@@ -128,6 +136,10 @@ public class Bubu {
             case EVENT:
             case FIND:
                 Command command = Parser.createCommand(commandType, input);
+                assert command != null : "Parser must create a valid Command object";
+                assert tasks != null : "TaskList must not be null before execution";
+                assert ui != null : "Ui must not be null before execution";
+                assert storage != null : "Storage must not be null before execution";
                 command.execute(tasks, ui, storage);
                 break;
             case MARK:
@@ -140,6 +152,7 @@ public class Bubu {
                 commandDelete(input);
                 break;
             default:
+                assert false : "Unhandled command type: " + commandType;
                 throw new IllegalArgumentException("Unhandled command type: " + commandType);
         }
     }
