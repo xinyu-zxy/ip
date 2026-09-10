@@ -38,6 +38,7 @@ public class Storage {
      * @param tasks Tasks to save.
      */
     public void saveTasks(List<Task> tasks) {
+        assert tasks != null : "Task list should not be null when saving to file.";
         List<String> lines = new ArrayList<>();
         for (Task task : tasks) {
             lines.add(format(task));
@@ -106,6 +107,7 @@ public class Storage {
             throw new UncheckedIOException("Unable to read tasks from " + FILE_PATH, e);
         }
 
+        assert loadedTasks != null : "Loaded tasks list should not be null";
         return loadedTasks;
     }
 

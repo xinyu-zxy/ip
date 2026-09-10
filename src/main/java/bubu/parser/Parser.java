@@ -43,6 +43,8 @@ public class Parser {
      * @throws BubuException If the command is unknown or input is empty.
      */
     public static CommandType parseCommandType(String input) throws BubuException {
+        assert input != null : "input string cannot be null";
+
         String trimmedInput = input.trim();
         if (trimmedInput.isEmpty()) {
             throw new UnknownCommandException();
@@ -66,6 +68,9 @@ public class Parser {
      * @throws BubuException If command arguments are invalid.
      */
     public static Command createCommand(CommandType commandType, String input) throws BubuException {
+        assert commandType != null : "CommandType cannot be null";
+        assert input != null : "Input string cannot be null";
+
         return switch (commandType) {
             case LIST -> new ListCommand();
             case BYE -> new ExitCommand();
@@ -109,7 +114,9 @@ public class Parser {
             throw new MissingArgumentException(COMMAND_NAME_DEADLINE);
         }
 
-        return new String[] {parts[0].trim(), parts[1].trim()};
+        String[] result = new String[] {parts[0].trim(), parts[1].trim()};
+        assert result.length == 2 : "Parsed deadline must yield description and date/time";
+        return result;
     }
 
     /**
@@ -132,7 +139,11 @@ public class Parser {
             throw new MissingArgumentException(COMMAND_NAME_EVENT);
         }
 
-        return new String[] {parts[0].trim(), timeLine[0].trim(), timeLine[1].trim()};
+        String[] output = new String[] {parts[0].trim(),
+                timeLine[0].trim(),
+                timeLine[1].trim()};
+        assert output.length == 3 : "Parsed event must yield description, start, and end";
+        return output;
     }
 
     /**
