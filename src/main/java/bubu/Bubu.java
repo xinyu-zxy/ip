@@ -29,6 +29,7 @@ public class Bubu {
      * @throws BubuException if the index is missing or invalid.
      */
     private void commandMark(String input) throws BubuException {
+        assert input != null : "Input cannot be null";
         String[] output = input.trim().split("\\s+", 2);
         if (output.length < 2) {
             throw new MissingArgumentException("mark");
@@ -53,6 +54,7 @@ public class Bubu {
      * @throws BubuException if the index is missing or invalid.
      */
     private void commandUnmark(String input) throws BubuException {
+        assert input != null : "Input cannot be null";
         String[] output = input.trim().split("\\s+", 2);
         if (output.length < 2) {
             throw new MissingArgumentException("unmark");
@@ -76,6 +78,7 @@ public class Bubu {
      * @throws BubuException if the index is missing or invalid.
      */
     private void commandDelete(String input) throws BubuException {
+        assert input != null : "Input cannot be null";
         String[] output = input.trim().split("\\s+", 2);
         if (output.length < 2) {
             throw new MissingArgumentException("delete");
@@ -102,10 +105,12 @@ public class Bubu {
      * @return the chatbot's response.
      */
     public String getResponse(String input) {
+        assert input != null : "Input cannot be null";
         ui.clearResponse();
 
         try {
             CommandType command = Parser.parseCommandType(input);
+            assert command != null : "CommandType must not be null after parsing";
             switch (command) {
                 case BYE:
                 case LIST:
@@ -114,6 +119,10 @@ public class Bubu {
                 case EVENT:
                 case FIND:
                     Command extractedCommand = Parser.createCommand(command, input);
+                    assert extractedCommand != null : "Parser must create a valid Command object";
+                    assert tasks != null : "TaskList must not be null before execution";
+                    assert ui != null : "Ui must not be null before execution";
+                    assert storage != null : "Storage must not be null before execution";
                     extractedCommand.execute(tasks, ui, storage);
                     break;
                 case MARK:
@@ -126,6 +135,7 @@ public class Bubu {
                     this.commandDelete(input);
                     break;
                 default:
+                    assert false : "Unhandled command type: " + command;
                     break;
             }
         } catch (BubuException e) {

@@ -23,11 +23,13 @@ public class TaskList {
      * @param tasks loaded tasks.
      */
     public TaskList(List<Task> tasks) {
+        assert tasks != null : "Tasks cannot be null";
         this.tasks = new ArrayList<>(tasks);
     }
 
     /** Adds a task to the end of the list. */
     public void add(Task task) {
+        assert task != null : "Task cannot be null";
         tasks.add(task);
     }
 
@@ -38,6 +40,7 @@ public class TaskList {
      * @return task at the index.
      */
     public Task get(int index) {
+        assert hasIndex(index) : "No task exists at index " + index;
         return tasks.get(index);
     }
 
@@ -48,6 +51,7 @@ public class TaskList {
      * @return removed task.
      */
     public Task remove(int index) {
+        assert hasIndex(index) : "No task exists at index " + index;
         return tasks.remove(index);
     }
 
@@ -84,6 +88,7 @@ public class TaskList {
      * @return a list of matching tasks.
      */
     public List<Task> findMatchingTasks(String keyword) {
+        assert keyword != null : "Keyword cannot be null";
         List<Task> matchingTasks = new ArrayList<>();
         for (Task task : tasks) {
             if (task.getDescription().contains(keyword)) {

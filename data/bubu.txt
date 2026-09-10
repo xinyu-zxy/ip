@@ -1,6 +1,6 @@
 T | 1 | play game
-D | 0 | submit work | 2026-08-24 2359
 D | 0 | math homework | 2026-11-10 1800
 E | 0 | submit work | 2026-07-12 1200 | 2026-08-12 2359
 T | 0 | eat lunch with friend
 T | 1 | help buy milk
+T | 0 | eat
