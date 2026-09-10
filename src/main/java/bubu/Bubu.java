@@ -103,6 +103,7 @@ public class Bubu {
      * @return The chatbot's response.
      */
     public String getResponse(String input) {
+        assert input != null : "Input cannot be null";
         ui.clearResponse();
 
         try {
