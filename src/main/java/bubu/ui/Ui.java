@@ -8,6 +8,29 @@ import bubu.task.Task;
  * Formats chatbot responses for display in the graphical user interface.
  */
 public class Ui {
+    private static final String BANNER = " /\\___/\\ \n"
+            + "(  o.o  )  Hello! I'm BUBU!\n";
+    private static final String MESSAGE_WELCOME = "What can I do for you? Meow!";
+    private static final String MESSAGE_GOODBYE = "Bye. Hope to see you again soon! Meow!";
+    private static final String MESSAGE_EMPTY_LIST = "Meow! Your task list is empty.";
+    private static final String MESSAGE_NO_MATCHES = "Meow! No matching tasks found.";
+    private static final String MESSAGE_TASK_ADDED = "Got it meow. I've added this task:";
+    private static final String MESSAGE_TASK_DELETED = "Meow! I've removed this task:";
+    private static final String MESSAGE_TASK_DONE = "Meow! I've marked this task as done:";
+    private static final String MESSAGE_TASK_NOT_DONE = "Meow! I've marked this task as not done yet:";
+    private static final String TASK_ITEM_FORMAT = "  %s";
+    private static final String NUMBERED_TASK_FORMAT = "%d. %s";
+    private static final String MESSAGE_TASK_COUNT = "Now you have %d %s in the list. Meow!";
+    private static final String NOUN_TASK_SINGULAR = "task";
+    private static final String NOUN_TASK_PLURAL = "tasks";
+    private static final String HEADER_LIST_SINGULAR = "Meow! Here is the task in your list:";
+    private static final String HEADER_LIST_PLURAL = "Meow! Here are the tasks in your list:";
+    private static final String HEADER_MATCH_SINGULAR = "Meow! Here is the matching task in your list:";
+    private static final String HEADER_MATCH_PLURAL = "Meow! Here are the matching tasks in your list:";
+    private static final int TASK_COUNT_SINGULAR = 1;
+
+
+
     /** Stores the response generated for the most recent user command. */
     private final StringBuilder response = new StringBuilder();
 
@@ -15,121 +38,109 @@ public class Ui {
      * Appends the chatbot greeting to the current response.
      */
     public void showWelcome() {
-        String banner = " /\\___/\\ \n"
-                + "(  o.o  )  Hello! I'm BUBU!\n";
-        response.append(banner)
-                .append("What can I do for you? Meow!")
-                .append(System.lineSeparator());
+        appendLine(BANNER.trim());
+        appendLine(MESSAGE_WELCOME);
     }
 
     /**
      * Appends the farewell message to the current response.
      */
     public void showGoodbye() {
-        response.append("Bye. Hope to see you again soon! Meow!")
-                .append(System.lineSeparator());
+        appendLine(MESSAGE_GOODBYE);
     }
 
     /**
      * Appends an error message from command processing to the current response.
+     *
+     * @param message Error message to display.
      */
     public void showError(String message) {
-        response.append(message)
-                .append(System.lineSeparator());
+        appendLine(message);
     }
 
     /**
      * Appends all tasks in their numbered list form to the current response.
+     *
+     * @param tasks List of tasks to show.
      */
     public void showTaskList(List<Task> tasks) {
-        if (tasks.isEmpty()) {
-            response.append("Meow! Your task list is empty.")
-                    .append(System.lineSeparator());
-        } else {
-            response.append(tasks.size() == 1
-                    ? "Meow! Here is the task in your list:"
-                    : "Meow! Here are the tasks in your list:")
-                    .append(System.lineSeparator());
-            for (int index = 0; index < tasks.size(); index++) {
-                response.append(index + 1)
-                        .append(". ")
-                        .append(tasks.get(index))
-                        .append(System.lineSeparator());
-            }
-        }
+        showTasksWithHeader(tasks, MESSAGE_EMPTY_LIST, HEADER_LIST_SINGULAR, HEADER_LIST_PLURAL);
+    }
+
+    /**
+     * Appends all matching tasks that match the search keyword to the current response.
+     *
+     * @param tasks List of matching tasks.
+     */
+    public void showMatchingTasks(List<Task> tasks) {
+        showTasksWithHeader(tasks, MESSAGE_NO_MATCHES, HEADER_MATCH_SINGULAR, HEADER_MATCH_PLURAL);
     }
 
     /**
      * Appends confirmation that a task was added to the current response.
+     *
+     * @param task Added task.
+     * @param taskCount Total number of tasks remaining.
      */
     public void showTaskAdded(Task task, int taskCount) {
-        response.append("Got it meow. I've added this task:")
-                .append(System.lineSeparator())
-                .append("  ")
-                .append(task)
-                .append(System.lineSeparator());
+        appendLine(MESSAGE_TASK_ADDED);
+        appendLine(String.format(TASK_ITEM_FORMAT, task));
         showTaskCount(taskCount);
     }
 
     /**
      * Appends confirmation that a task's completion status changed to the current response.
+     *
+     * @param task Target task.
+     * @param isDone True if task is marked complete, false otherwise.
      */
     public void showTaskMarked(Task task, boolean isDone) {
-        response.append(isDone
-                ? "Meow! I've marked this task as done:"
-                : "Meow! I've marked this task as not done yet:")
-                .append(System.lineSeparator())
-                .append("  ")
-                .append(task)
-                .append(System.lineSeparator());
+        appendLine(isDone ? MESSAGE_TASK_DONE : MESSAGE_TASK_NOT_DONE);
+        appendLine(String.format(TASK_ITEM_FORMAT, task));
     }
 
     /**
      * Appends confirmation that a task was deleted to the current response.
+     *
+     * @param task Removed task.
+     * @param taskCount Total number of tasks remaining.
      */
     public void showTaskDeleted(Task task, int taskCount) {
-        response.append("Meow! I've removed this task:")
-                .append(System.lineSeparator())
-                .append("  ")
-                .append(task)
-                .append(System.lineSeparator());
+        appendLine(MESSAGE_TASK_DELETED);
+        appendLine(String.format(TASK_ITEM_FORMAT, task));
         showTaskCount(taskCount);
+    }
+
+    /**
+     * Renders either an empty-state message or an enumerated list of tasks with the given headers.
+     */
+    private void showTasksWithHeader(List<Task> tasks, String emptyMessage,
+                                     String singularHeader, String pluralHeader) {
+        if (tasks.isEmpty()) {
+            appendLine(emptyMessage);
+            return;
+        }
+
+        String header = tasks.size() == TASK_COUNT_SINGULAR ? singularHeader : pluralHeader;
+        appendLine(header);
+        for (int index = 0; index < tasks.size(); index++) {
+            appendLine(String.format(NUMBERED_TASK_FORMAT, index + 1, tasks.get(index)));
+        }
     }
 
     /**
      * Appends the singular or plural task-count message to the current response.
      */
     private void showTaskCount(int taskCount) {
-        String noun = taskCount == 1 ? "task" : "tasks";
-        response.append("Now you have ")
-                .append(taskCount)
-                .append(" ")
-                .append(noun)
-                .append(" in the list. Meow!")
-                .append(System.lineSeparator());
+        String noun = taskCount == TASK_COUNT_SINGULAR ? NOUN_TASK_SINGULAR : NOUN_TASK_PLURAL;
+        appendLine(String.format(MESSAGE_TASK_COUNT, taskCount, noun));
     }
 
     /**
-     * Appends all matching tasks that match the search keyword to the current response.
-     *
-     * @param tasks list of matching tasks.
+     * Appends a text line followed by a platform-independent line separator.
      */
-    public void showMatchingTasks(List<Task> tasks) {
-        if (tasks.isEmpty()) {
-            response.append("Meow! No matching tasks found.")
-                    .append(System.lineSeparator());
-        } else {
-            response.append(tasks.size() == 1
-                    ? "Meow! Here is the matching task in your list:"
-                    : "Meow! Here are the matching tasks in your list:")
-                    .append(System.lineSeparator());
-            for (int index = 0; index < tasks.size(); index++) {
-                response.append(index + 1)
-                        .append(". ")
-                        .append(tasks.get(index))
-                        .append(System.lineSeparator());
-            }
-        }
+    private void appendLine(String line) {
+        response.append(line).append(System.lineSeparator());
     }
 
     /**
@@ -142,7 +153,7 @@ public class Ui {
     /**
      * Returns the current response as a string.
      *
-     * @return current response.
+     * @return Current response.
      */
     public String getResponse() {
         return response.toString();
