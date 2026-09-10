@@ -35,11 +35,9 @@ public class Storage {
      * @param tasks tasks to save.
      */
     public void saveTasks(List<Task> tasks) {
-        List<String> lines = new ArrayList<>();
-        for (Task task : tasks) {
-            lines.add(format(task));
-        }
-
+        List<String> lines = tasks.stream()
+                .map(this::format)
+                .toList();
         try {
             Files.createDirectories(FILE_PATH.getParent());
             Files.write(FILE_PATH, lines);
