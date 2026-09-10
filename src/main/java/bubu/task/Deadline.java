@@ -8,8 +8,10 @@ import java.util.Locale;
  * Represents a task that must be completed by a specific date and time.
  */
 public class Deadline extends Task {
+    private static final String DATE_TIME_PATTERN = "MMM dd yyyy, h:mma";
     private static final DateTimeFormatter DISPLAY_FORMAT =
-            DateTimeFormatter.ofPattern("MMM dd yyyy, h:mma", Locale.ENGLISH);
+            DateTimeFormatter.ofPattern(DATE_TIME_PATTERN, Locale.ENGLISH);
+    private static final String TO_STRING_FORMAT = "[D]%s (by: %s)";
     /** Date and time by which the task is due. */
     private LocalDateTime deadline;
 
@@ -30,10 +32,6 @@ public class Deadline extends Task {
 
     @Override
     public String toString() {
-        return "[D]"
-                + super.toString()
-                + " (by: "
-                + this.deadline.format(DISPLAY_FORMAT)
-                + ")";
+        return String.format(TO_STRING_FORMAT, super.toString(), this.deadline.format(DISPLAY_FORMAT));
     }
 }

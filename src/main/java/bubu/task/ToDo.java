@@ -4,6 +4,7 @@ package bubu.task;
  * Represents a task without a date or time.
  */
 public class ToDo extends Task {
+    private static final String TODO_ICON = "[T]";
     /**
      * Creates a to-do task.
      *
@@ -15,6 +16,7 @@ public class ToDo extends Task {
 
     @Override
     public String toString() {
-        return "[T]" + super.toString();
+        return TODO_ICON + super.toString();
     }
 }
+

@@ -4,6 +4,8 @@ package bubu.task;
  * Represents a task that can be marked as complete.
  */
 public abstract class Task {
+    private static final String STATUS_COMPLETED = "[X] ";
+    private static final String STATUS_NOT_COMPLETED = "[ ] ";
     /** Description shown to the user. */
     private String description;
     /** Whether the task has been completed. */
@@ -51,18 +53,9 @@ public abstract class Task {
         this.isDone = false;
     }
 
-    /**
-     * Returns whether this task is complete.
-     *
-     * @return true if this task is complete.
-     */
-    public boolean getStatus() {
-        return this.isDone;
-    }
-
     @Override
     public String toString() {
-        return (this.isDone ? "[X] " : "[ ] ")
+        return (this.isDone ? STATUS_COMPLETED : STATUS_NOT_COMPLETED)
                 + this.description;
     }
 }

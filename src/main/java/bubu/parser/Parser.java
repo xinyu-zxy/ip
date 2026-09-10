@@ -1,11 +1,7 @@
 package bubu.parser;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 
 import bubu.command.Command;
 import bubu.command.CommandType;
@@ -20,46 +16,54 @@ import bubu.exception.EmptyDescriptionException;
 import bubu.exception.InvalidDateTimeException;
 import bubu.exception.MissingArgumentException;
 import bubu.exception.UnknownCommandException;
+import bubu.util.DateTimeParser;
 
 /**
  * Converts user input into command types, command objects, and date-time values.
  */
 public class Parser {
-    /** Format accepted for a date-time supplied by the user. */
-    private static final DateTimeFormatter DATE_TIME_FORMAT =
-            DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
-                    .withResolverStyle(ResolverStyle.STRICT);
+    private static final String REGEX_WHITESPACE = "\\s+";
+    private static final String DELIMITER_BY = " /by ";
+    private static final String DELIMITER_FROM = " /from ";
+    private static final String DELIMITER_TO = " /to ";
+    private static final String COMMAND_NAME_DEADLINE = "deadline";
+    private static final String COMMAND_NAME_EVENT = "event";
+    private static final int ARGUMENT_SPLIT_LIMIT = 2;
+    private static final int INDEX_COMMAND_WORD = 0;
+    private static final int INDEX_ARGUMENT_BODY = 1;
+
+    private static final LocalTime DEFAULT_END_TIME = LocalTime.of(23, 59);
+    private static final LocalTime DEFAULT_START_TIME = LocalTime.MIDNIGHT;
 
     /**
      * Extracts the command word after ignoring leading and repeated whitespace.
      *
-     * @param input command entered by the user.
-     * @return the matching command type.
-     * @throws BubuException if the command is unknown.
+     * @param input Command entered by the user.
+     * @return The matching command type.
+     * @throws BubuException If the command is unknown or input is empty.
      */
     public static CommandType parseCommandType(String input) throws BubuException {
         String trimmedInput = input.trim();
         if (trimmedInput.isEmpty()) {
             throw new UnknownCommandException();
         }
-        String command = trimmedInput.split("\\s+", 2)[0];
+
+        String commandWord = trimmedInput.split(REGEX_WHITESPACE, ARGUMENT_SPLIT_LIMIT)[INDEX_COMMAND_WORD];
 
         try {
-            return CommandType.valueOf(command.toUpperCase());
+            return CommandType.valueOf(commandWord.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new UnknownCommandException(command);
+            throw new UnknownCommandException(commandWord);
         }
     }
 
     /**
-     * Creates an executable command for command types already moved to the
-     * command hierarchy.
+     * Creates an executable command object from the parsed command type.
      *
-     * @param commandType parsed command type.
-     * @param input full user input.
-     * @return executable command object.
-     * @throws BubuException if the command arguments are invalid.
-     * @throws IllegalArgumentException if the type has not yet been extracted.
+     * @param commandType Parsed command type.
+     * @param input Full user input.
+     * @return Executable command object.
+     * @throws BubuException If command arguments are invalid.
      */
     public static Command createCommand(CommandType commandType, String input) throws BubuException {
         return switch (commandType) {
@@ -67,17 +71,8 @@ public class Parser {
             case BYE -> new ExitCommand();
             case TODO -> new TodoCommand(parseArg(input));
             case FIND -> new FindCommand(parseArg(input));
-            case DEADLINE -> {
-                String[] info = parseDeadline(input);
-                yield new DeadlineCommand(info[0],
-                        parseDateTime(info[1], LocalTime.of(23, 59)));
-            }
-            case EVENT -> {
-                String[] info = parseEvent(input);
-                LocalDateTime start = parseDateTime(info[1], LocalTime.MIDNIGHT);
-                LocalDateTime end = parseDateTime(info[2], LocalTime.of(23, 59));
-                yield new EventCommand(info[0], start, end);
-            }
+            case DEADLINE -> createDeadlineCommand(input);
+            case EVENT -> createEventCommand(input);
             default -> throw new IllegalArgumentException(
                     "Command type has not yet been extracted: " + commandType);
         };
@@ -86,31 +81,32 @@ public class Parser {
     /**
      * Extracts the text following a command word.
      *
-     * @param input full command entered by the user.
-     * @return trimmed command argument.
-     * @throws BubuException if the argument is missing.
+     * @param input Full command entered by the user.
+     * @return Trimmed command argument.
+     * @throws BubuException If the argument is missing.
      */
     public static String parseArg(String input) throws BubuException {
-        String[] args = input.trim().split("\\s+", 2);
-        if (args.length < 2 || args[1].trim().isEmpty()) {
-            throw new EmptyDescriptionException(args[0]);
+        String[] args = input.trim().split(REGEX_WHITESPACE, ARGUMENT_SPLIT_LIMIT);
+        if (args.length < ARGUMENT_SPLIT_LIMIT || args[INDEX_ARGUMENT_BODY].trim().isEmpty()) {
+            throw new EmptyDescriptionException(args[INDEX_COMMAND_WORD]);
         }
 
-        return args[1].trim();
+        return args[INDEX_ARGUMENT_BODY].trim();
     }
 
     /**
      * Extracts a deadline description and its {@code /by} value.
      *
-     * @param input full deadline command.
-     * @return description at index 0 and date-time text at index 1.
-     * @throws BubuException if required deadline arguments are missing.
+     * @param input Full deadline command.
+     * @return Description at index 0 and date-time text at index 1.
+     * @throws BubuException If required deadline arguments are missing.
      */
     public static String[] parseDeadline(String input) throws BubuException {
-        String args = Parser.parseArg(input);
-        String[] parts = args.split(" /by ", 2);
-        if (parts.length < 2 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty()) {
-            throw new MissingArgumentException("deadline");
+        String args = parseArg(input);
+        String[] parts = args.split(DELIMITER_BY, ARGUMENT_SPLIT_LIMIT);
+
+        if (hasMissingParts(parts)) {
+            throw new MissingArgumentException(COMMAND_NAME_DEADLINE);
         }
 
         return new String[] {parts[0].trim(), parts[1].trim()};
@@ -119,47 +115,75 @@ public class Parser {
     /**
      * Extracts an event description plus its {@code /from} and {@code /to} values.
      *
-     * @param input full event command.
-     * @return description, start date-time text, and end date-time text.
-     * @throws BubuException if required event arguments are missing.
+     * @param input Full event command.
+     * @return Description, start date-time text, and end date-time text.
+     * @throws BubuException If required event arguments are missing.
      */
     public static String[] parseEvent(String input) throws BubuException {
-        String args = Parser.parseArg(input);
+        String args = parseArg(input);
 
-        String[] commands = args.split(" /from ", 2);
-        if (commands.length < 2 || commands[0].trim().isEmpty()) {
-            throw new EmptyDescriptionException("event");
+        String[] parts = args.split(DELIMITER_FROM, ARGUMENT_SPLIT_LIMIT);
+        if (parts.length < ARGUMENT_SPLIT_LIMIT || parts[0].trim().isEmpty()) {
+            throw new EmptyDescriptionException(COMMAND_NAME_EVENT);
         }
 
-        String[] timeLine = commands[1].split(" /to ", 2);
-        if (timeLine.length < 2 || timeLine[0].trim().isEmpty() || timeLine[1].trim().isEmpty()) {
-            throw new MissingArgumentException("event");
+        String[] timeLine = parts[1].split(DELIMITER_TO, ARGUMENT_SPLIT_LIMIT);
+        if (hasMissingParts(timeLine)) {
+            throw new MissingArgumentException(COMMAND_NAME_EVENT);
         }
 
-        String[] output = new String[] {commands[0].trim(),
-                timeLine[0].trim(),
-                timeLine[1].trim()};
-        return output;
+        return new String[] {parts[0].trim(), timeLine[0].trim(), timeLine[1].trim()};
     }
 
     /**
-     * Parses a date-time or date-only value. A date-only value receives the
-     * supplied default time.
+     * Parses a date-time or date-only value into a {@code LocalDateTime}.
      *
-     * @param input date in yyyy-MM-dd or date-time in yyyy-MM-dd HHmm format.
-     * @param defaultTime time to use when the input contains only a date.
-     * @return the parsed date and time.
-     * @throws InvalidDateTimeException if neither accepted format matches.
+     * @param input Date in yyyy-MM-dd or date-time in yyyy-MM-dd HHmm format.
+     * @param defaultTime Time to use when the input contains only a date.
+     * @return The parsed date and time.
+     * @throws InvalidDateTimeException If neither accepted format matches.
      */
-    public static LocalDateTime parseDateTime(String input, LocalTime defaultTime) throws InvalidDateTimeException {
-        try {
-            return LocalDateTime.parse(input, DATE_TIME_FORMAT);
-        } catch (DateTimeParseException ignored) {
-            try {
-                return LocalDate.parse(input).atTime(defaultTime);
-            } catch (DateTimeParseException e) {
-                throw new InvalidDateTimeException();
-            }
-        }
+    public static LocalDateTime parseDateTime(String input, LocalTime defaultTime)
+            throws InvalidDateTimeException {
+        return DateTimeParser.parse(input, defaultTime);
+    }
+
+    /**
+     * Creates a deadline command from the user input.
+     *
+     * @param input The user input string.
+     * @return The created deadline command.
+     * @throws BubuException If the input is invalid.
+     */
+    private static DeadlineCommand createDeadlineCommand(String input) throws BubuException {
+        String[] info = parseDeadline(input);
+        LocalDateTime dueTime = parseDateTime(info[1], DEFAULT_END_TIME);
+        return new DeadlineCommand(info[0], dueTime);
+    }
+
+    /**
+     * Creates an event command from the user input.
+     *
+     * @param input The user input string.
+     * @return The created event command.
+     * @throws BubuException If the input is invalid.
+     */
+    private static EventCommand createEventCommand(String input) throws BubuException {
+        String[] info = parseEvent(input);
+        LocalDateTime start = parseDateTime(info[1], DEFAULT_START_TIME);
+        LocalDateTime end = parseDateTime(info[2], DEFAULT_END_TIME);
+        return new EventCommand(info[0], start, end);
+    }
+
+    /**
+     * Checks if the provided parts array has missing or empty elements.
+     *
+     * @param parts The array of strings to check.
+     * @return True if any part is missing or empty, false otherwise.
+     */
+    private static boolean hasMissingParts(String[] parts) {
+        return parts.length < ARGUMENT_SPLIT_LIMIT
+                || parts[0].trim().isEmpty()
+                || parts[1].trim().isEmpty();
     }
 }
