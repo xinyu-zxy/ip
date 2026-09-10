@@ -31,6 +31,7 @@ public class MainWindow extends AnchorPane {
 
     /** Injects the Bubu instance */
     public void setBubu(Bubu d) {
+        assert d != null : "Bubu instance injected into MainWindow cannot be null";
         bubu = d;
     }
 
@@ -40,6 +41,8 @@ public class MainWindow extends AnchorPane {
      */
     @FXML
     private void handleUserInput() {
+        assert bubu != null : "Bubu controller must be initialized before handling input";
+        assert dialogContainer != null : "FXML dialogContainer injection failed";
         String input = userInput.getText();
         String response = bubu.getResponse(input);
         dialogContainer.getChildren().addAll(
