@@ -8,8 +8,10 @@ import java.util.Locale;
  * Represents a task that occurs between a start and end date-time.
  */
 public class Event extends Task {
+    private static final String DATE_TIME_PATTERN = "MMM dd yyyy, h:mma";
     private static final DateTimeFormatter DISPLAY_FORMAT =
-            DateTimeFormatter.ofPattern("MMM dd yyyy, h:mma", Locale.ENGLISH);
+            DateTimeFormatter.ofPattern(DATE_TIME_PATTERN, Locale.ENGLISH);
+    private static final String TO_STRING_FORMAT = "[E]%s (from: %s to: %s)";
     /** Date and time at which the event starts. */
     private LocalDateTime start;
     /** Date and time at which the event ends. */
@@ -48,12 +50,9 @@ public class Event extends Task {
 
     @Override
     public String toString() {
-        return "[E]"
-                + super.toString()
-                + " (from: "
-                + this.start.format(DISPLAY_FORMAT)
-                + " to: "
-                + this.end.format(DISPLAY_FORMAT)
-                + ")";
+        return String.format(TO_STRING_FORMAT,
+                super.toString(),
+                this.start.format(DISPLAY_FORMAT),
+                this.end.format(DISPLAY_FORMAT));
     }
 }
