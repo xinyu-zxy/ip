@@ -1,5 +1,8 @@
 package bubu.task;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 /**
  * Represents a task that can be marked as complete.
  */
@@ -51,6 +54,15 @@ public abstract class Task {
      */
     public void markAsUndone() {
         this.isDone = false;
+    }
+
+    /**
+     * Returns the time at which this task should appear in a reminder query.
+     *
+     * @return scheduled task time, or an empty value for unscheduled tasks.
+     */
+    public Optional<LocalDateTime> getReminderTime() {
+        return Optional.empty();
     }
 
     @Override

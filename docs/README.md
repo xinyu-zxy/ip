@@ -28,3 +28,9 @@ expected output
 ## Feature XYZ
 
 // Feature details
+
+## Reminders for upcoming tasks
+
+Use `remind` to list incomplete deadlines and events that occur within the next three days. Events are checked using their start time. To-do tasks and overdue tasks are not included.
+
+Example: `remind`

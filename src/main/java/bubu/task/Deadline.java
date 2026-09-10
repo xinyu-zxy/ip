@@ -3,6 +3,7 @@ package bubu.task;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Represents a task that must be completed by a specific date and time.
@@ -28,6 +29,11 @@ public class Deadline extends Task {
 
     public LocalDateTime getDeadline() {
         return this.deadline;
+    }
+
+    @Override
+    public Optional<LocalDateTime> getReminderTime() {
+        return Optional.of(deadline);
     }
 
     @Override

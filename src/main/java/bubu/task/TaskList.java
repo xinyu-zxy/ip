@@ -1,5 +1,6 @@
 package bubu.task;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -92,5 +93,38 @@ public class TaskList {
         return tasks.stream()
                 .filter(task -> task.getDescription().contains(keyword))
                 .toList();
+    }
+
+    /**
+     * Finds incomplete tasks that have a scheduled time within the given window.
+     *
+     * @param start beginning of the time window, inclusive.
+     * @param end end of the time window, inclusive.
+     * @return incomplete scheduled tasks within the time window.
+     */
+    public List<Task> findIncompleteTasksDueBetween(LocalDateTime start, LocalDateTime end) {
+        assert start != null : "Start time cannot be null";
+        assert end != null : "End time cannot be null";
+        assert !end.isBefore(start) : "End time cannot be before start time";
+
+        return tasks.stream()
+                .filter(task -> !task.isDone())
+                .filter(task -> isDueBetween(task, start, end))
+                .toList();
+    }
+
+    /**
+     * Returns whether a task's reminder time is within the given inclusive window.
+     *
+     * @param task the task to check
+     * @param start the start of the time window
+     * @param end the end of the time window
+     * @return true if the task's reminder time is within the window, false otherwise
+     */
+    private boolean isDueBetween(Task task, LocalDateTime start, LocalDateTime end) {
+        return task.getReminderTime()
+                .filter(reminderTime -> !reminderTime.isBefore(start))
+                .filter(reminderTime -> !reminderTime.isAfter(end))
+                .isPresent();
     }
 }

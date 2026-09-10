@@ -135,6 +135,7 @@ public class Bubu {
             case DEADLINE:
             case EVENT:
             case FIND:
+            case REMIND:
                 Command command = Parser.createCommand(commandType, input);
                 assert command != null : "Parser must create a valid Command object";
                 assert tasks != null : "TaskList must not be null before execution";

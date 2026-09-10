@@ -14,6 +14,8 @@ public class Ui {
     private static final String MESSAGE_GOODBYE = "Bye. Hope to see you again soon! Meow!";
     private static final String MESSAGE_EMPTY_LIST = "Meow! Your task list is empty.";
     private static final String MESSAGE_NO_MATCHES = "Meow! No matching tasks found.";
+    private static final String MESSAGE_NO_UPCOMING_TASKS =
+            "Meow! No incomplete tasks are due within the next 3 days.";
     private static final String MESSAGE_TASK_ADDED = "Got it meow. I've added this task:";
     private static final String MESSAGE_TASK_DELETED = "Meow! I've removed this task:";
     private static final String MESSAGE_TASK_DONE = "Meow! I've marked this task as done:";
@@ -27,6 +29,10 @@ public class Ui {
     private static final String HEADER_LIST_PLURAL = "Meow! Here are the tasks in your list:";
     private static final String HEADER_MATCH_SINGULAR = "Meow! Here is the matching task in your list:";
     private static final String HEADER_MATCH_PLURAL = "Meow! Here are the matching tasks in your list:";
+    private static final String HEADER_UPCOMING_SINGULAR =
+            "Meow! Here is an incomplete task due within the next 3 days:";
+    private static final String HEADER_UPCOMING_PLURAL =
+            "Meow! Here are the incomplete tasks due within the next 3 days:";
     private static final int TASK_COUNT_SINGULAR = 1;
 
 
@@ -74,6 +80,16 @@ public class Ui {
      */
     public void showMatchingTasks(List<Task> tasks) {
         showTasksWithHeader(tasks, MESSAGE_NO_MATCHES, HEADER_MATCH_SINGULAR, HEADER_MATCH_PLURAL);
+    }
+
+    /**
+     * Appends incomplete tasks that are due within the reminder window.
+     *
+     * @param tasks Upcoming tasks to show.
+     */
+    public void showUpcomingTasks(List<Task> tasks) {
+        showTasksWithHeader(tasks, MESSAGE_NO_UPCOMING_TASKS,
+                HEADER_UPCOMING_SINGULAR, HEADER_UPCOMING_PLURAL);
     }
 
     /**

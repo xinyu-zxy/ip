@@ -10,6 +10,7 @@ import bubu.command.EventCommand;
 import bubu.command.ExitCommand;
 import bubu.command.FindCommand;
 import bubu.command.ListCommand;
+import bubu.command.RemindCommand;
 import bubu.command.TodoCommand;
 import bubu.exception.BubuException;
 import bubu.exception.EmptyDescriptionException;
@@ -76,6 +77,7 @@ public class Parser {
             case BYE -> new ExitCommand();
             case TODO -> new TodoCommand(parseArg(input));
             case FIND -> new FindCommand(parseArg(input));
+            case REMIND -> new RemindCommand();
             case DEADLINE -> createDeadlineCommand(input);
             case EVENT -> createEventCommand(input);
             default -> throw new IllegalArgumentException(

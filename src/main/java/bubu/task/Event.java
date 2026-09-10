@@ -3,6 +3,7 @@ package bubu.task;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Represents a task that occurs between a start and end date-time.
@@ -46,6 +47,11 @@ public class Event extends Task {
      */
     public LocalDateTime getEnd() {
         return this.end;
+    }
+
+    @Override
+    public Optional<LocalDateTime> getReminderTime() {
+        return Optional.of(start);
     }
 
     @Override
