@@ -13,7 +13,8 @@ class TaskListReminderTest {
     @Test
     void findIncompleteTasksDueBetween_returnsOnlyUpcomingIncompleteScheduledTasks() {
         Deadline upcomingDeadline = new Deadline("submit assignment", CURRENT_TIME.plusDays(1));
-        Event upcomingEvent = new Event("team meeting", CURRENT_TIME.plusDays(2), CURRENT_TIME.plusDays(2).plusHours(1));
+        Event upcomingEvent = new Event("team meeting", CURRENT_TIME.plusDays(2),
+                CURRENT_TIME.plusDays(2).plusHours(1));
         Deadline completedDeadline = new Deadline("finished task", CURRENT_TIME.plusDays(2));
         completedDeadline.markAsDone();
         Deadline overdueDeadline = new Deadline("missed task", CURRENT_TIME.minusHours(1));
