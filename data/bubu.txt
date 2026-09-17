@@ -1,3 +1,2 @@
-E | 0 | team meeting | 2026-09-13 1400 | 2026-09-13 1500
-D | 1 | Submit assignment | 2026-09-11 2359
-T | 0 | Math homework
+D | 0 | sleep | 2019-10-11 1400
+T | 0 | buy cat food
