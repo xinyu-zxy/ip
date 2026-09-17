@@ -145,12 +145,13 @@ Example: `bye`
 Bubu displays an error message when a command cannot be completed. The
 application remains open so you can correct the input and try again.
 
-| Input | Bubu's response |
-| --- | --- |
-| `he is` | `I'm sorry, but I don't know what 'he is' means. ^.^` |
-| `todo` | `Meow! The description of a todo task cannot be empty.` |
-| `mark 8` when there are 3 tasks | `Meow! The index you provided is invalid. Please provide a valid index between 1 and 3.` |
-| `deadline submit report /by 18/09/2026` | `Meow! Please use yyyy-MM-dd or yyyy-MM-dd HHmm (e.g., 2026-08-31 1800).` |
+| Error type | Input | Bubu's response |
+| --- | --- | --- |
+| Unknown command | `he is` | `I'm sorry, but I don't know what 'he is' means. ^.^` |
+| Missing description | `todo` | `Meow! The description of a todo task cannot be empty.` |
+| Duplicate task | `todo prepare slides` when the task already exists | `Meow! An identical task already exists in your list.` |
+| Invalid task index | `mark 8` when there are 3 tasks | `Meow! The index you provided is invalid. Please provide a valid index between 1 and 3.` |
+| Invalid date format | `deadline submit report /by 18/09/2026` | `Meow! Please use yyyy-MM-dd or yyyy-MM-dd HHmm (e.g., 2026-08-31 1800).` |
 
 Error responses are highlighted differently in the GUI so that they are easy
 to notice.
