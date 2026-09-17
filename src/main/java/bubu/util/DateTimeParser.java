@@ -11,8 +11,10 @@ import bubu.exception.InvalidDateTimeException;
 
 /** Provides the application's shared date-time parsing and formatting rules. */
 public final class DateTimeParser {
+    private static final String DATE_TIME_PATTERN = "uuuu-MM-dd HHmm";
+    private static final String INVALID_STORED_DATE_TIME_MESSAGE = "Invalid stored date-time: ";
     private static final DateTimeFormatter DATE_TIME_FORMAT =
-            DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
+            DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)
                     .withResolverStyle(ResolverStyle.STRICT);
 
     private DateTimeParser() {
@@ -45,7 +47,7 @@ public final class DateTimeParser {
         try {
             return parse(input, defaultTime);
         } catch (InvalidDateTimeException exception) {
-            throw new IllegalArgumentException("Invalid stored date-time: " + input, exception);
+            throw new IllegalArgumentException(INVALID_STORED_DATE_TIME_MESSAGE + input, exception);
         }
     }
 

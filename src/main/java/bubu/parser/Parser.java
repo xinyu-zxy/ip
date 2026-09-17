@@ -28,15 +28,25 @@ import bubu.util.DateTimeParser;
  */
 public class Parser {
     private static final String REGEX_WHITESPACE = "\\s+";
-    private static final String DELIMITER_BY = "\\s+/by\\s+";
-    private static final String DELIMITER_FROM = "\\s+/from\\s+";
-    private static final String DELIMITER_TO = "\\s+/to\\s+";
+    private static final String ARGUMENT_MARKER_BY = "/by";
+    private static final String ARGUMENT_MARKER_FROM = "/from";
+    private static final String ARGUMENT_MARKER_TO = "/to";
+    private static final String DELIMITER_BY = REGEX_WHITESPACE + ARGUMENT_MARKER_BY
+            + REGEX_WHITESPACE;
+    private static final String DELIMITER_FROM = REGEX_WHITESPACE + ARGUMENT_MARKER_FROM
+            + REGEX_WHITESPACE;
+    private static final String DELIMITER_TO = REGEX_WHITESPACE + ARGUMENT_MARKER_TO
+            + REGEX_WHITESPACE;
+    private static final String COMMAND_NAME_LIST = "list";
+    private static final String COMMAND_NAME_BYE = "bye";
+    private static final String COMMAND_NAME_REMIND = "remind";
     private static final String COMMAND_NAME_DEADLINE = "deadline";
     private static final String COMMAND_NAME_EVENT = "event";
     private static final int ARGUMENT_SPLIT_LIMIT = 2;
     private static final int COMMAND_ONLY_PART_COUNT = 1;
     private static final int INDEX_COMMAND_WORD = 0;
     private static final int INDEX_ARGUMENT_BODY = 1;
+    private static final int ARGUMENT_MARKER_PREFIX_LENGTH = 1;
 
     private static final LocalTime DEFAULT_END_TIME = LocalTime.of(23, 59);
     private static final LocalTime DEFAULT_START_TIME = LocalTime.MIDNIGHT;
@@ -79,17 +89,17 @@ public class Parser {
 
         return switch (commandType) {
             case LIST -> {
-                requireNoArguments(input, "list");
+                requireNoArguments(input, COMMAND_NAME_LIST);
                 yield new ListCommand();
             }
             case BYE -> {
-                requireNoArguments(input, "bye");
+                requireNoArguments(input, COMMAND_NAME_BYE);
                 yield new ExitCommand();
             }
             case TODO -> new TodoCommand(parseArg(input));
             case FIND -> new FindCommand(parseArg(input));
             case REMIND -> {
-                requireNoArguments(input, "remind");
+                requireNoArguments(input, COMMAND_NAME_REMIND);
                 yield new RemindCommand();
             }
             case DEADLINE -> createDeadlineCommand(input);
@@ -126,7 +136,7 @@ public class Parser {
      */
     public static String[] parseDeadline(String input) throws BubuException {
         String args = parseArg(input);
-        ensureArgumentAppearsOnce(args, "/by");
+        ensureArgumentAppearsOnce(args, ARGUMENT_MARKER_BY);
         String[] parts = args.split(DELIMITER_BY, ARGUMENT_SPLIT_LIMIT);
 
         if (hasMissingParts(parts)) {
@@ -147,8 +157,8 @@ public class Parser {
      */
     public static String[] parseEvent(String input) throws BubuException {
         String args = parseArg(input);
-        ensureArgumentAppearsOnce(args, "/from");
-        ensureArgumentAppearsOnce(args, "/to");
+        ensureArgumentAppearsOnce(args, ARGUMENT_MARKER_FROM);
+        ensureArgumentAppearsOnce(args, ARGUMENT_MARKER_TO);
 
         String[] parts = args.split(DELIMITER_FROM, ARGUMENT_SPLIT_LIMIT);
         if (parts.length < ARGUMENT_SPLIT_LIMIT || parts[0].trim().isEmpty()) {
@@ -245,7 +255,8 @@ public class Parser {
             throws DuplicateArgumentException {
         int firstIndex = input.indexOf(argument);
         if (firstIndex >= 0 && input.indexOf(argument, firstIndex + argument.length()) >= 0) {
-            throw new DuplicateArgumentException(argument.substring(1));
+            throw new DuplicateArgumentException(
+                    argument.substring(ARGUMENT_MARKER_PREFIX_LENGTH));
         }
     }
 

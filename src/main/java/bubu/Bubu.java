@@ -30,6 +30,7 @@ public class Bubu {
             "Meow! I could not load some saved tasks. Please check the data file and try again.";
     private static final String COMMAND_FAILURE_MESSAGE =
             "Meow! I could not complete that command. Please try again.";
+    private static final String UNHANDLED_COMMAND_MESSAGE = "Unhandled command type: ";
 
     /** Saves task-list changes to disk. */
     private final Storage storage;
@@ -257,8 +258,8 @@ public class Bubu {
                 commandDelete(input);
                 break;
             default:
-                assert false : "Unhandled command type: " + commandType;
-                throw new IllegalArgumentException("Unhandled command type: " + commandType);
+                assert false : UNHANDLED_COMMAND_MESSAGE + commandType;
+                throw new IllegalArgumentException(UNHANDLED_COMMAND_MESSAGE + commandType);
         }
     }
 }
