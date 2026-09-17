@@ -13,9 +13,13 @@ import bubu.command.ListCommand;
 import bubu.command.RemindCommand;
 import bubu.command.TodoCommand;
 import bubu.exception.BubuException;
+import bubu.exception.DuplicateArgumentException;
 import bubu.exception.EmptyDescriptionException;
+import bubu.exception.InvalidDateRangeException;
 import bubu.exception.InvalidDateTimeException;
+import bubu.exception.InvalidDescriptionException;
 import bubu.exception.MissingArgumentException;
+import bubu.exception.UnexpectedArgumentException;
 import bubu.exception.UnknownCommandException;
 import bubu.util.DateTimeParser;
 
@@ -24,12 +28,13 @@ import bubu.util.DateTimeParser;
  */
 public class Parser {
     private static final String REGEX_WHITESPACE = "\\s+";
-    private static final String DELIMITER_BY = " /by ";
-    private static final String DELIMITER_FROM = " /from ";
-    private static final String DELIMITER_TO = " /to ";
+    private static final String DELIMITER_BY = "\\s+/by\\s+";
+    private static final String DELIMITER_FROM = "\\s+/from\\s+";
+    private static final String DELIMITER_TO = "\\s+/to\\s+";
     private static final String COMMAND_NAME_DEADLINE = "deadline";
     private static final String COMMAND_NAME_EVENT = "event";
     private static final int ARGUMENT_SPLIT_LIMIT = 2;
+    private static final int COMMAND_ONLY_PART_COUNT = 1;
     private static final int INDEX_COMMAND_WORD = 0;
     private static final int INDEX_ARGUMENT_BODY = 1;
 
@@ -73,11 +78,20 @@ public class Parser {
         assert input != null : "Input string cannot be null";
 
         return switch (commandType) {
-            case LIST -> new ListCommand();
-            case BYE -> new ExitCommand();
+            case LIST -> {
+                requireNoArguments(input, "list");
+                yield new ListCommand();
+            }
+            case BYE -> {
+                requireNoArguments(input, "bye");
+                yield new ExitCommand();
+            }
             case TODO -> new TodoCommand(parseArg(input));
             case FIND -> new FindCommand(parseArg(input));
-            case REMIND -> new RemindCommand();
+            case REMIND -> {
+                requireNoArguments(input, "remind");
+                yield new RemindCommand();
+            }
             case DEADLINE -> createDeadlineCommand(input);
             case EVENT -> createEventCommand(input);
             default -> throw new IllegalArgumentException(
@@ -98,7 +112,9 @@ public class Parser {
             throw new EmptyDescriptionException(args[INDEX_COMMAND_WORD]);
         }
 
-        return args[INDEX_ARGUMENT_BODY].trim();
+        String argument = args[INDEX_ARGUMENT_BODY].trim();
+        validateDescription(argument);
+        return argument;
     }
 
     /**
@@ -110,6 +126,7 @@ public class Parser {
      */
     public static String[] parseDeadline(String input) throws BubuException {
         String args = parseArg(input);
+        ensureArgumentAppearsOnce(args, "/by");
         String[] parts = args.split(DELIMITER_BY, ARGUMENT_SPLIT_LIMIT);
 
         if (hasMissingParts(parts)) {
@@ -130,6 +147,8 @@ public class Parser {
      */
     public static String[] parseEvent(String input) throws BubuException {
         String args = parseArg(input);
+        ensureArgumentAppearsOnce(args, "/from");
+        ensureArgumentAppearsOnce(args, "/to");
 
         String[] parts = args.split(DELIMITER_FROM, ARGUMENT_SPLIT_LIMIT);
         if (parts.length < ARGUMENT_SPLIT_LIMIT || parts[0].trim().isEmpty()) {
@@ -185,6 +204,9 @@ public class Parser {
         String[] info = parseEvent(input);
         LocalDateTime start = parseDateTime(info[1], DEFAULT_START_TIME);
         LocalDateTime end = parseDateTime(info[2], DEFAULT_END_TIME);
+        if (!end.isAfter(start)) {
+            throw new InvalidDateRangeException();
+        }
         return new EventCommand(info[0], start, end);
     }
 
@@ -198,5 +220,47 @@ public class Parser {
         return parts.length < ARGUMENT_SPLIT_LIMIT
                 || parts[0].trim().isEmpty()
                 || parts[1].trim().isEmpty();
+    }
+
+    /**
+     * Rejects descriptions that would break the task file format.
+     *
+     * @param description text to validate.
+     * @throws InvalidDescriptionException if the text contains an unsupported character.
+     */
+    private static void validateDescription(String description) throws InvalidDescriptionException {
+        if (description.contains("|") || description.contains("\n") || description.contains("\r")) {
+            throw new InvalidDescriptionException();
+        }
+    }
+
+    /**
+     * Ensures that a named command argument appears at most once.
+     *
+     * @param input command argument text.
+     * @param argument argument marker to count.
+     * @throws DuplicateArgumentException if the argument appears multiple times.
+     */
+    private static void ensureArgumentAppearsOnce(String input, String argument)
+            throws DuplicateArgumentException {
+        int firstIndex = input.indexOf(argument);
+        if (firstIndex >= 0 && input.indexOf(argument, firstIndex + argument.length()) >= 0) {
+            throw new DuplicateArgumentException(argument.substring(1));
+        }
+    }
+
+    /**
+     * Rejects extra text for commands that do not accept arguments.
+     *
+     * @param input complete command input.
+     * @param commandName command that should not receive an argument.
+     * @throws UnexpectedArgumentException if extra text is present.
+     */
+    private static void requireNoArguments(String input, String commandName)
+            throws UnexpectedArgumentException {
+        String[] parts = input.trim().split(REGEX_WHITESPACE, ARGUMENT_SPLIT_LIMIT);
+        if (parts.length > COMMAND_ONLY_PART_COUNT) {
+            throw new UnexpectedArgumentException(commandName);
+        }
     }
 }

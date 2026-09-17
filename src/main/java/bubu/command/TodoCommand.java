@@ -1,5 +1,6 @@
 package bubu.command;
 
+import bubu.exception.BubuException;
 import bubu.storage.Storage;
 import bubu.task.TaskList;
 import bubu.task.ToDo;
@@ -19,7 +20,7 @@ public class TodoCommand extends AddTaskCommand {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public void execute(TaskList tasks, Ui ui, Storage storage) throws BubuException {
         addTask(new ToDo(description), tasks, ui, storage);
     }
 }

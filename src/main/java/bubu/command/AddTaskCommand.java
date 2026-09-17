@@ -1,5 +1,8 @@
 package bubu.command;
 
+import java.io.UncheckedIOException;
+
+import bubu.exception.BubuException;
 import bubu.storage.Storage;
 import bubu.task.Task;
 import bubu.task.TaskList;
@@ -9,6 +12,8 @@ import bubu.ui.Ui;
  * Base class for commands that create and save one task.
  */
 public abstract class AddTaskCommand extends Command {
+    private static final int LAST_ITEM_OFFSET = 1;
+
     /**
      * Adds a task, saves the updated list, and shows confirmation.
      *
@@ -17,9 +22,14 @@ public abstract class AddTaskCommand extends Command {
      * @param ui user interface for confirmation.
      * @param storage storage used to save the list.
      */
-    protected void addTask(Task task, TaskList tasks, Ui ui, Storage storage) {
+    protected void addTask(Task task, TaskList tasks, Ui ui, Storage storage) throws BubuException {
         tasks.add(task);
-        storage.saveTasks(tasks.asList());
+        try {
+            storage.saveTasks(tasks.asList());
+        } catch (UncheckedIOException exception) {
+            tasks.remove(tasks.size() - LAST_ITEM_OFFSET);
+            throw exception;
+        }
         ui.showTaskAdded(task, tasks.size());
     }
 }

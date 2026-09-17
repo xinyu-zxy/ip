@@ -9,9 +9,13 @@ import java.time.LocalTime;
 
 import org.junit.jupiter.api.Test;
 
+import bubu.command.CommandType;
 import bubu.exception.BubuException;
+import bubu.exception.DuplicateArgumentException;
 import bubu.exception.InvalidDateTimeException;
+import bubu.exception.InvalidDateRangeException;
 import bubu.exception.MissingArgumentException;
+import bubu.exception.UnexpectedArgumentException;
 
 public class ParserTest {
 
@@ -23,6 +27,11 @@ public class ParserTest {
 
         // Test missing argument /by
         assertThrows(MissingArgumentException.class, () -> Parser.parseDeadline("deadline return book"));
+
+        String[] flexibleSpacing = Parser.parseDeadline("deadline return book   /by   2026-08-30 1800");
+        assertArrayEquals(new String[]{"return book", "2026-08-30 1800"}, flexibleSpacing);
+        assertThrows(DuplicateArgumentException.class,
+                () -> Parser.parseDeadline("deadline return book /by 2026-08-30 /by 1800"));
     }
 
     @Test
@@ -34,5 +43,19 @@ public class ParserTest {
         assertEquals(LocalDateTime.of(2026, 8, 30, 23, 59), dateOnly);
 
         assertThrows(InvalidDateTimeException.class, () -> Parser.parseDateTime("invalid-date", LocalTime.MIDNIGHT));
+    }
+
+    @Test
+    void parseEvent_endNotAfterStart_throws() {
+        assertThrows(InvalidDateRangeException.class,
+                () -> Parser.createCommand(
+                        CommandType.EVENT,
+                        "event meeting /from 2026-08-30 1800 /to 2026-08-30 1800"));
+    }
+
+    @Test
+    void createCommand_commandWithoutArguments_throwsForExtraInput() {
+        assertThrows(UnexpectedArgumentException.class,
+                () -> Parser.createCommand(CommandType.LIST, "list extra"));
     }
 }

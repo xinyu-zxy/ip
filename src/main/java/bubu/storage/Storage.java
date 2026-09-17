@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,25 @@ public class Storage {
     private static final String STATUS_DONE = "1";
     private static final String STATUS_NOT_DONE = "0";
 
+    private static final String SAVE_ERROR_MESSAGE = "Unable to save tasks to %s";
+    private static final String LOAD_ERROR_MESSAGE = "Unable to read tasks from %s";
+    private static final String UNSUPPORTED_TASK_MESSAGE = "Unsupported task type: %s. Meow!";
+    private static final String UNKNOWN_TYPE_MESSAGE = "Unknown type: %s";
+    private static final String UNKNOWN_TASK_TYPE_MESSAGE = "Unknown task type: %s";
+    private static final String MALFORMED_RECORD_MESSAGE = "Malformed task record: %s";
+    private static final String INVALID_EVENT_RANGE_MESSAGE = "Invalid event range in stored task";
+
+    private static final int TASK_TYPE_INDEX = 0;
+    private static final int TASK_STATUS_INDEX = 1;
+    private static final int TASK_DESCRIPTION_INDEX = 2;
+    private static final int DEADLINE_TIME_INDEX = 3;
+    private static final int EVENT_START_INDEX = 3;
+    private static final int EVENT_END_INDEX = 4;
+    private static final int MINIMUM_TASK_PARTS = 3;
+    private static final int TODO_PART_COUNT = 3;
+    private static final int DEADLINE_PART_COUNT = 4;
+    private static final int EVENT_PART_COUNT = 5;
+
     private static final LocalTime DEFAULT_END_TIME = LocalTime.of(23, 59);
     private static final LocalTime DEFAULT_START_TIME = LocalTime.MIDNIGHT;
 
@@ -46,7 +66,7 @@ public class Storage {
             Files.createDirectories(FILE_PATH.getParent());
             Files.write(FILE_PATH, lines);
         } catch (IOException e) {
-            throw new UncheckedIOException("Unable to save tasks to " + FILE_PATH, e);
+            throw new UncheckedIOException(String.format(SAVE_ERROR_MESSAGE, FILE_PATH), e);
         }
     }
 
@@ -78,7 +98,8 @@ public class Storage {
                     DateTimeParser.format(event.getEnd()));
         }
 
-        throw new IllegalArgumentException("Unsupported task type: " + task.getClass().getName() + ". Meow!");
+        throw new IllegalArgumentException(String.format(UNSUPPORTED_TASK_MESSAGE,
+                task.getClass().getName()));
     }
 
     /**
@@ -102,7 +123,7 @@ public class Storage {
                 loadedTasks.add(parseTask(line));
             }
         } catch (IOException e) {
-            throw new UncheckedIOException("Unable to read tasks from " + FILE_PATH, e);
+            throw new UncheckedIOException(String.format(LOAD_ERROR_MESSAGE, FILE_PATH), e);
         }
 
         assert loadedTasks != null : "Loaded tasks list should not be null";
@@ -118,23 +139,66 @@ public class Storage {
      */
     private Task parseTask(String line) {
         String[] parts = line.split(REGEX_DELIMITER_READ);
-        String taskType = parts[0];
+        validateStoredTaskParts(parts, line);
+        String taskType = parts[TASK_TYPE_INDEX];
 
         Task task = switch (taskType) {
-            case TYPE_TODO -> new ToDo(parts[2]);
-            case TYPE_DEADLINE -> new Deadline(parts[2],
-                    DateTimeParser.parseStored(parts[3], DEFAULT_END_TIME));
-            case TYPE_EVENT -> new Event(parts[2],
-                    DateTimeParser.parseStored(parts[3], DEFAULT_START_TIME),
-                    DateTimeParser.parseStored(parts[4], DEFAULT_END_TIME));
-            default -> throw new IllegalArgumentException("Unknown type: " + taskType);
+            case TYPE_TODO -> new ToDo(parts[TASK_DESCRIPTION_INDEX]);
+            case TYPE_DEADLINE -> new Deadline(parts[TASK_DESCRIPTION_INDEX],
+                    DateTimeParser.parseStored(parts[DEADLINE_TIME_INDEX], DEFAULT_END_TIME));
+            case TYPE_EVENT -> parseStoredEvent(parts);
+            default -> throw new IllegalArgumentException(String.format(UNKNOWN_TYPE_MESSAGE, taskType));
         };
 
-        if (parts[1].equals(STATUS_DONE)) {
+        if (parts[TASK_STATUS_INDEX].equals(STATUS_DONE)) {
             task.markAsDone();
         }
 
         return task;
+    }
+
+    /**
+     * Parses an event record and validates its chronological range.
+     *
+     * @param parts fields from a stored event record.
+     * @return parsed event.
+     * @throws IllegalArgumentException if the event range is invalid.
+     */
+    private Event parseStoredEvent(String[] parts) {
+        LocalDateTime start = DateTimeParser.parseStored(parts[EVENT_START_INDEX], DEFAULT_START_TIME);
+        LocalDateTime end = DateTimeParser.parseStored(parts[EVENT_END_INDEX], DEFAULT_END_TIME);
+        if (!end.isAfter(start)) {
+            throw new IllegalArgumentException(INVALID_EVENT_RANGE_MESSAGE);
+        }
+        return new Event(parts[TASK_DESCRIPTION_INDEX], start, end);
+    }
+
+    /**
+     * Validates the common fields of a stored task record before parsing it.
+     *
+     * @param parts fields extracted from a stored record.
+     * @param line original record, used in the error message.
+     * @throws IllegalArgumentException if the record is malformed.
+     */
+    private void validateStoredTaskParts(String[] parts, String line) {
+        if (parts.length < MINIMUM_TASK_PARTS
+                || (!parts[TASK_STATUS_INDEX].equals(STATUS_DONE)
+                && !parts[TASK_STATUS_INDEX].equals(STATUS_NOT_DONE))) {
+            throw new IllegalArgumentException(String.format(MALFORMED_RECORD_MESSAGE, line));
+        }
+
+        String taskType = parts[TASK_TYPE_INDEX];
+        int expectedPartCount = switch (taskType) {
+            case TYPE_TODO -> TODO_PART_COUNT;
+            case TYPE_DEADLINE -> DEADLINE_PART_COUNT;
+            case TYPE_EVENT -> EVENT_PART_COUNT;
+            default -> throw new IllegalArgumentException(
+                    String.format(UNKNOWN_TASK_TYPE_MESSAGE, taskType));
+        };
+        if (parts.length != expectedPartCount
+                || parts[TASK_DESCRIPTION_INDEX].trim().isEmpty()) {
+            throw new IllegalArgumentException(String.format(MALFORMED_RECORD_MESSAGE, line));
+        }
     }
 
 }

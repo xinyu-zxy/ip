@@ -1,5 +1,7 @@
 package bubu;
 
+import java.io.UncheckedIOException;
+
 import bubu.command.Command;
 import bubu.command.CommandType;
 import bubu.exception.BubuException;
@@ -23,13 +25,29 @@ public class Bubu {
     private static final String COMMAND_NAME_DELETE = "delete";
 
     /** Saves task-list changes to disk. */
-    private final Storage storage = new Storage();
+    private final Storage storage;
     /** Stores the tasks currently managed by the chatbot. */
-    private final TaskList tasks = new TaskList(storage.load());
+    private final TaskList tasks;
     /** Handles all console interaction. */
     private final Ui ui = new Ui();
+    /** Explains a task-file problem discovered while starting the application. */
+    private String startupWarning;
     /** Whether the most recent response was caused by invalid user input. */
     private boolean lastResponseWasError;
+
+    /** Creates Bubu and loads saved tasks without allowing bad data to crash startup. */
+    public Bubu() {
+        storage = new Storage();
+        TaskList loadedTasks;
+        try {
+            loadedTasks = new TaskList(storage.load());
+        } catch (UncheckedIOException | IllegalArgumentException exception) {
+            loadedTasks = new TaskList();
+            startupWarning = "Meow! I could not load some saved tasks. "
+                    + "Please check the data file and try again.";
+        }
+        tasks = loadedTasks;
+    }
 
     /**
      * Marks the task identified by a user-provided one-based index as complete.
@@ -41,8 +59,9 @@ public class Bubu {
         assert input != null : "Input cannot be null";
         int index = extractValidIndex(input, COMMAND_NAME_MARK);
         Task task = this.tasks.get(index);
+        boolean wasDone = task.isDone();
         task.markAsDone();
-        this.storage.saveTasks(tasks.asList());
+        saveTasksOrRestore(task, wasDone);
         ui.showTaskMarked(task, true);
     }
 
@@ -56,8 +75,9 @@ public class Bubu {
         assert input != null : "Input cannot be null";
         int index = extractValidIndex(input, COMMAND_NAME_UNMARK);
         Task task = this.tasks.get(index);
+        boolean wasDone = task.isDone();
         task.markAsUndone();
-        this.storage.saveTasks(tasks.asList());
+        saveTasksOrRestore(task, wasDone);
         ui.showTaskMarked(task, false);
     }
 
@@ -71,8 +91,32 @@ public class Bubu {
         assert input != null : "Input cannot be null";
         int index = extractValidIndex(input, COMMAND_NAME_DELETE);
         Task removedTask = this.tasks.remove(index);
-        this.storage.saveTasks(tasks.asList());
+        try {
+            this.storage.saveTasks(tasks.asList());
+        } catch (UncheckedIOException exception) {
+            this.tasks.insert(index, removedTask);
+            throw exception;
+        }
         ui.showTaskDeleted(removedTask, tasks.size());
+    }
+
+    /**
+     * Saves a changed task and restores its previous status if saving fails.
+     *
+     * @param task task whose completion status changed.
+     * @param previousStatus status before the change.
+     */
+    private void saveTasksOrRestore(Task task, boolean previousStatus) {
+        try {
+            this.storage.saveTasks(tasks.asList());
+        } catch (UncheckedIOException exception) {
+            if (previousStatus) {
+                task.markAsDone();
+            } else {
+                task.markAsUndone();
+            }
+            throw exception;
+        }
     }
 
     /**
@@ -121,6 +165,9 @@ public class Bubu {
         } catch (BubuException e) {
             lastResponseWasError = true;
             ui.showError(e.getMessage());
+        } catch (UncheckedIOException e) {
+            lastResponseWasError = true;
+            ui.showError("Meow! I could not complete that command. Please try again.");
         }
 
         return ui.getResponse();
@@ -134,6 +181,9 @@ public class Bubu {
     public String getWelcomeMessage() {
         ui.clearResponse();
         ui.showWelcome();
+        if (startupWarning != null) {
+            ui.showError(startupWarning);
+        }
         return ui.getResponse();
     }
 

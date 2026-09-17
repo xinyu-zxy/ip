@@ -2,6 +2,7 @@ package bubu.command;
 
 import java.time.LocalDateTime;
 
+import bubu.exception.BubuException;
 import bubu.storage.Storage;
 import bubu.task.Deadline;
 import bubu.task.TaskList;
@@ -23,7 +24,7 @@ public class DeadlineCommand extends AddTaskCommand {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public void execute(TaskList tasks, Ui ui, Storage storage) throws BubuException {
         addTask(new Deadline(description, deadline), tasks, ui, storage);
     }
 }

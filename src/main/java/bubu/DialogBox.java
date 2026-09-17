@@ -23,6 +23,9 @@ import javafx.scene.shape.Rectangle;
 public class DialogBox extends HBox {
     /** Standard profile-picture size used for each conversation participant. */
     private static final double PROFILE_PICTURE_SIZE = 48.0;
+    private static final double PROFILE_PICTURE_CORNER_RADIUS = 18.0;
+    private static final String USER_NAME = "You";
+    private static final String BUBU_NAME = "Bubu";
 
     @FXML
     private Label dialog;
@@ -40,7 +43,7 @@ public class DialogBox extends HBox {
             fxmlLoader.setRoot(this);
             fxmlLoader.load();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Unable to load the dialog layout.", e);
         }
 
         dialog.setText(text);
@@ -50,8 +53,8 @@ public class DialogBox extends HBox {
         displayPicture.setFitWidth(PROFILE_PICTURE_SIZE);
         displayPicture.setFitHeight(PROFILE_PICTURE_SIZE);
         Rectangle clip = new Rectangle(PROFILE_PICTURE_SIZE, PROFILE_PICTURE_SIZE);
-        clip.setArcWidth(18);
-        clip.setArcHeight(18);
+        clip.setArcWidth(PROFILE_PICTURE_CORNER_RADIUS);
+        clip.setArcHeight(PROFILE_PICTURE_CORNER_RADIUS);
         displayPicture.setClip(clip);
         messageColumn.setMaxWidth(Double.MAX_VALUE);
     }
@@ -76,7 +79,7 @@ public class DialogBox extends HBox {
      * @return A dialog box for the user.
      */
     public static DialogBox getUserDialog(String text, Image img) {
-        DialogBox dialogBox = new DialogBox(text, img, "You");
+        DialogBox dialogBox = new DialogBox(text, img, USER_NAME);
         dialogBox.setAlignment(Pos.CENTER_RIGHT);
         dialogBox.dialog.getStyleClass().add("user-label");
         return dialogBox;
@@ -90,7 +93,7 @@ public class DialogBox extends HBox {
      * @return A dialog box for Bubu.
      */
     public static DialogBox getBubuDialog(String text, Image img) {
-        var db = new DialogBox(text, img, "Bubu");
+        var db = new DialogBox(text, img, BUBU_NAME);
         db.flip();
         return db;
     }
