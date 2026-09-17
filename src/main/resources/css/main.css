@@ -1,52 +1,59 @@
 .root {
-    /* Warm cream and ginger colours inspired by a cat's coat. */
-    main-color: #fff4e6;
+    main-color: #fff1e6;
     -fx-background-color: main-color;
 }
 
 .text-field {
-    -fx-background-color: #fffdf8;
-    -fx-border-color: #d98b45;
+    -fx-background-color: #fffaf5;
+    -fx-border-color: #e8b27d;
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
-    -fx-font: 20px "Arial";
+    -fx-font: 14px "Arial";
+    -fx-padding: 10px 12px;
+}
+
+.text-field:focused {
+    -fx-border-color: #d97757;
+    -fx-background-color: #fffaf5;
 }
 
 .button {
-    -fx-background-color: #d97736;
+    -fx-background-color: #d97757;
     -fx-background-radius: 8px;
     -fx-text-fill: white;
-    -fx-font: bold 16px "Arial";
+    -fx-font: bold 14px "Arial";
 }
+.button:hover { -fx-background-color: #bd5943; }
+.button:pressed { -fx-background-color: #984331; }
 
-.button:hover {
-    -fx-background-color: #b45309;
-    -fx-font-size: 18px;
-}
-
-.button:pressed {
-    -fx-background-color: #92400e;
-}
-
-.scroll-pane,
-.scroll-pane .viewport {
-    -fx-background-color: transparent;
-}
-
-.scroll-bar {
-    -fx-font-size: 10px;  /* Change width of scroll bar. */
-    -fx-background-color: main-color;
-}
-
-.scroll-bar .thumb {
-    -fx-background-color: #d98b45;
-    -fx-background-radius: 1em;
-}
-
-/* Hides the increment and decrement buttons. */
-.scroll-bar .increment-button,
-.scroll-bar .decrement-button {
+.scroll-pane, .scroll-pane .viewport { -fx-background-color: transparent; }
+.scroll-bar { -fx-font-size: 10px; -fx-background-color: main-color; }
+.scroll-bar .thumb { -fx-background-color: #e8b27d; -fx-background-radius: 1em; }
+.scroll-bar .increment-button, .scroll-bar .decrement-button {
     -fx-pref-height: 0;
     -fx-opacity: 0;
 }
 
+.label {
+    -fx-background-color: #ffe0c2;
+    -fx-text-fill: #5c4033;
+    -fx-font: 14px "Arial";
+    -fx-background-radius: 12px 12px 2px 12px;
+}
+.reply-label {
+    -fx-background-color: #ffe0c2;
+    -fx-background-radius: 0 12px 12px 12px;
+    -fx-border-color: #e8a24d;
+    -fx-border-width: 0 0 0 2px;
+    -fx-border-radius: 0;
+}
+.error-label {
+    -fx-background-color: #fff0ed;
+    -fx-text-fill: #a33b32;
+    -fx-border-color: #d9786e;
+    -fx-border-width: 1px;
+    -fx-border-radius: 0;
+}
+#displayPicture {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.16), 5, 0.4, 1, 1);
+}

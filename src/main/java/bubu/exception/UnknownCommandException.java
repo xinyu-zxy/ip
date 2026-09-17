@@ -4,7 +4,7 @@ package bubu.exception;
  * Indicates that the user entered a command word the chatbot does not recognize.
  */
 public class UnknownCommandException extends BubuException {
-    private static final String UNKNOWN_COMMAND_MESSAGE = "I'm sorry, but I don't know what %s means. ^.^";
+    private static final String UNKNOWN_COMMAND_MESSAGE = "I'm sorry, but I don't know what '%s' means. ^.^";
     private static final String UNKNOWN_COMMAND_GENERIC_MESSAGE = "I'm sorry, but I don't know what that means. ^.^";
 
     /**

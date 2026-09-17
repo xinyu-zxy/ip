@@ -8,34 +8,41 @@ import bubu.task.Task;
  * Formats chatbot responses for display in the graphical user interface.
  */
 public class Ui {
-    private static final String BANNER = " /\\___/\\ \n"
-            + "(  o.o  )  Hello! I'm BUBU!\n";
-    private static final String MESSAGE_WELCOME = "What can I do for you? Meow!";
-    private static final String MESSAGE_GOODBYE = "Bye. Hope to see you again soon! Meow!";
-    private static final String MESSAGE_EMPTY_LIST = "Meow! Your task list is empty.";
-    private static final String MESSAGE_NO_MATCHES = "Meow! No matching tasks found.";
-    private static final String MESSAGE_NO_UPCOMING_TASKS =
+    // Welcome and farewell messages.
+    private static final String WELCOME_BANNER = "/\\___/\\ \n"
+            + "(  >.<  )  Hello! I'm BUBU!\n";
+    private static final String WELCOME_MESSAGE = "What can I do for you? Meow!";
+    private static final String GOODBYE_MESSAGE = "Bye. Hope to see you again soon! Meow!";
+
+    // Empty-state and task-operation messages.
+    private static final String EMPTY_LIST_MESSAGE = "Meow! Your task list is empty.";
+    private static final String NO_MATCHES_MESSAGE = "Meow! No matching tasks found.";
+    private static final String NO_UPCOMING_TASKS_MESSAGE =
             "Meow! No incomplete tasks are due within the next 3 days.";
-    private static final String MESSAGE_TASK_ADDED = "Got it meow. I've added this task:";
-    private static final String MESSAGE_TASK_DELETED = "Meow! I've removed this task:";
-    private static final String MESSAGE_TASK_DONE = "Meow! I've marked this task as done:";
-    private static final String MESSAGE_TASK_NOT_DONE = "Meow! I've marked this task as not done yet:";
+    private static final String TASK_ADDED_MESSAGE = "Got it meow. I've added this task:";
+    private static final String TASK_DELETED_MESSAGE = "Meow! I've removed this task:";
+    private static final String TASK_DONE_MESSAGE = "Meow! I've marked this task as done:";
+    private static final String TASK_NOT_DONE_MESSAGE = "Meow! I've marked this task as not done yet:";
+
+    // Formats and task-count wording.
     private static final String TASK_ITEM_FORMAT = "  %s";
     private static final String NUMBERED_TASK_FORMAT = "%d. %s";
-    private static final String MESSAGE_TASK_COUNT = "Now you have %d %s in the list. Meow!";
-    private static final String NOUN_TASK_SINGULAR = "task";
-    private static final String NOUN_TASK_PLURAL = "tasks";
-    private static final String HEADER_LIST_SINGULAR = "Meow! Here is the task in your list:";
-    private static final String HEADER_LIST_PLURAL = "Meow! Here are the tasks in your list:";
-    private static final String HEADER_MATCH_SINGULAR = "Meow! Here is the matching task in your list:";
-    private static final String HEADER_MATCH_PLURAL = "Meow! Here are the matching tasks in your list:";
-    private static final String HEADER_UPCOMING_SINGULAR =
+    private static final String TASK_COUNT_MESSAGE = "Now you have %d %s in the list. Meow!";
+    private static final String SINGULAR_TASK_NOUN = "task";
+    private static final String PLURAL_TASK_NOUN = "tasks";
+
+    // Headers used when displaying task collections.
+    private static final String TASK_LIST_SINGULAR_HEADER = "Meow! Here is the task in your list:";
+    private static final String TASK_LIST_PLURAL_HEADER = "Meow! Here are the tasks in your list:";
+    private static final String MATCHING_TASK_SINGULAR_HEADER =
+            "Meow! Here is the matching task in your list:";
+    private static final String MATCHING_TASK_PLURAL_HEADER =
+            "Meow! Here are the matching tasks in your list:";
+    private static final String UPCOMING_TASK_SINGULAR_HEADER =
             "Meow! Here is an incomplete task due within the next 3 days:";
-    private static final String HEADER_UPCOMING_PLURAL =
+    private static final String UPCOMING_TASK_PLURAL_HEADER =
             "Meow! Here are the incomplete tasks due within the next 3 days:";
-    private static final int TASK_COUNT_SINGULAR = 1;
-
-
+    private static final int SINGULAR_TASK_COUNT = 1;
 
     /** Stores the response generated for the most recent user command. */
     private final StringBuilder response = new StringBuilder();
@@ -44,15 +51,15 @@ public class Ui {
      * Appends the chatbot greeting to the current response.
      */
     public void showWelcome() {
-        appendLine(BANNER.trim());
-        appendLine(MESSAGE_WELCOME);
+        appendLine(WELCOME_BANNER.trim());
+        appendLine(WELCOME_MESSAGE);
     }
 
     /**
      * Appends the farewell message to the current response.
      */
     public void showGoodbye() {
-        appendLine(MESSAGE_GOODBYE);
+        appendLine(GOODBYE_MESSAGE);
     }
 
     /**
@@ -70,7 +77,8 @@ public class Ui {
      * @param tasks List of tasks to show.
      */
     public void showTaskList(List<Task> tasks) {
-        showTasksWithHeader(tasks, MESSAGE_EMPTY_LIST, HEADER_LIST_SINGULAR, HEADER_LIST_PLURAL);
+        showTasksWithHeader(tasks, EMPTY_LIST_MESSAGE,
+                TASK_LIST_SINGULAR_HEADER, TASK_LIST_PLURAL_HEADER);
     }
 
     /**
@@ -79,7 +87,8 @@ public class Ui {
      * @param tasks List of matching tasks.
      */
     public void showMatchingTasks(List<Task> tasks) {
-        showTasksWithHeader(tasks, MESSAGE_NO_MATCHES, HEADER_MATCH_SINGULAR, HEADER_MATCH_PLURAL);
+        showTasksWithHeader(tasks, NO_MATCHES_MESSAGE,
+                MATCHING_TASK_SINGULAR_HEADER, MATCHING_TASK_PLURAL_HEADER);
     }
 
     /**
@@ -88,8 +97,8 @@ public class Ui {
      * @param tasks Upcoming tasks to show.
      */
     public void showUpcomingTasks(List<Task> tasks) {
-        showTasksWithHeader(tasks, MESSAGE_NO_UPCOMING_TASKS,
-                HEADER_UPCOMING_SINGULAR, HEADER_UPCOMING_PLURAL);
+        showTasksWithHeader(tasks, NO_UPCOMING_TASKS_MESSAGE,
+                UPCOMING_TASK_SINGULAR_HEADER, UPCOMING_TASK_PLURAL_HEADER);
     }
 
     /**
@@ -99,7 +108,7 @@ public class Ui {
      * @param taskCount Total number of tasks remaining.
      */
     public void showTaskAdded(Task task, int taskCount) {
-        appendLine(MESSAGE_TASK_ADDED);
+        appendLine(TASK_ADDED_MESSAGE);
         appendLine(String.format(TASK_ITEM_FORMAT, task));
         showTaskCount(taskCount);
     }
@@ -111,7 +120,7 @@ public class Ui {
      * @param isDone True if task is marked complete, false otherwise.
      */
     public void showTaskMarked(Task task, boolean isDone) {
-        appendLine(isDone ? MESSAGE_TASK_DONE : MESSAGE_TASK_NOT_DONE);
+        appendLine(isDone ? TASK_DONE_MESSAGE : TASK_NOT_DONE_MESSAGE);
         appendLine(String.format(TASK_ITEM_FORMAT, task));
     }
 
@@ -122,7 +131,7 @@ public class Ui {
      * @param taskCount Total number of tasks remaining.
      */
     public void showTaskDeleted(Task task, int taskCount) {
-        appendLine(MESSAGE_TASK_DELETED);
+        appendLine(TASK_DELETED_MESSAGE);
         appendLine(String.format(TASK_ITEM_FORMAT, task));
         showTaskCount(taskCount);
     }
@@ -137,7 +146,7 @@ public class Ui {
             return;
         }
 
-        String header = tasks.size() == TASK_COUNT_SINGULAR ? singularHeader : pluralHeader;
+        String header = tasks.size() == SINGULAR_TASK_COUNT ? singularHeader : pluralHeader;
         appendLine(header);
         for (int index = 0; index < tasks.size(); index++) {
             appendLine(String.format(NUMBERED_TASK_FORMAT, index + 1, tasks.get(index)));
@@ -148,8 +157,8 @@ public class Ui {
      * Appends the singular or plural task-count message to the current response.
      */
     private void showTaskCount(int taskCount) {
-        String noun = taskCount == TASK_COUNT_SINGULAR ? NOUN_TASK_SINGULAR : NOUN_TASK_PLURAL;
-        appendLine(String.format(MESSAGE_TASK_COUNT, taskCount, noun));
+        String noun = taskCount == SINGULAR_TASK_COUNT ? SINGULAR_TASK_NOUN : PLURAL_TASK_NOUN;
+        appendLine(String.format(TASK_COUNT_MESSAGE, taskCount, noun));
     }
 
     /**

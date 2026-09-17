@@ -4,19 +4,23 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<fx:root alignment="TOP_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="400.0" stylesheets="@../css/dialog-box.css" type="javafx.scene.layout.HBox" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="TOP_RIGHT" maxWidth="1.7976931348623157E308" spacing="10.0" stylesheets="@../css/dialog-box.css" type="javafx.scene.layout.HBox" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <Label fx:id="dialog" minHeight="-Infinity" text="Label" wrapText="true">
-         <HBox.margin>
-            <Insets left="7.0" right="7.0" />
-         </HBox.margin>
-         <padding>
-            <Insets bottom="6.0" left="6.0" right="6.0" top="6.0" />
-         </padding></Label>
-        <ImageView fx:id="displayPicture" fitHeight="99.0" fitWidth="99.0" pickOnBounds="true" preserveRatio="true" />
+        <VBox fx:id="messageColumn" alignment="TOP_RIGHT" spacing="4.0">
+            <children>
+                <Label fx:id="speakerName" text="Speaker" />
+                <Label fx:id="dialog" minHeight="-Infinity" text="Label" wrapText="true">
+                    <padding>
+                        <Insets bottom="8.0" left="12.0" right="12.0" top="8.0" />
+                    </padding>
+                </Label>
+            </children>
+        </VBox>
+        <ImageView fx:id="displayPicture" fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true" />
     </children>
     <padding>
-        <Insets bottom="15.0" left="5.0" right="5.0" top="15.0" />
+        <Insets bottom="8.0" left="18.0" right="18.0" top="8.0" />
     </padding>
 </fx:root>

@@ -13,7 +13,7 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-    private Bubu bubu = new Bubu();
+    private final Bubu bubu = new Bubu();
 
     @Override
     public void start(Stage stage) {
