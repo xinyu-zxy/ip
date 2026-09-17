@@ -12,10 +12,13 @@ import org.junit.jupiter.api.Test;
 import bubu.command.CommandType;
 import bubu.exception.BubuException;
 import bubu.exception.DuplicateArgumentException;
-import bubu.exception.InvalidDateTimeException;
+import bubu.exception.EmptyDescriptionException;
 import bubu.exception.InvalidDateRangeException;
+import bubu.exception.InvalidDateTimeException;
+import bubu.exception.InvalidDescriptionException;
 import bubu.exception.MissingArgumentException;
 import bubu.exception.UnexpectedArgumentException;
+import bubu.exception.UnknownCommandException;
 
 public class ParserTest {
 
@@ -28,10 +31,11 @@ public class ParserTest {
         // Test missing argument /by
         assertThrows(MissingArgumentException.class, () -> Parser.parseDeadline("deadline return book"));
 
-        String[] flexibleSpacing = Parser.parseDeadline("deadline return book   /by   2026-08-30 1800");
+        String[] flexibleSpacing = Parser.parseDeadline(
+                "deadline return book   /by   2026-08-30 1800");
         assertArrayEquals(new String[]{"return book", "2026-08-30 1800"}, flexibleSpacing);
-        assertThrows(DuplicateArgumentException.class,
-                () -> Parser.parseDeadline("deadline return book /by 2026-08-30 /by 1800"));
+        assertThrows(DuplicateArgumentException.class, () ->
+                Parser.parseDeadline("deadline return book /by 2026-08-30 /by 1800"));
     }
 
     @Test
@@ -46,16 +50,51 @@ public class ParserTest {
     }
 
     @Test
-    void parseEvent_endNotAfterStart_throws() {
-        assertThrows(InvalidDateRangeException.class,
-                () -> Parser.createCommand(
-                        CommandType.EVENT,
-                        "event meeting /from 2026-08-30 1800 /to 2026-08-30 1800"));
+    void parseEvent_endNotAfterStart_throwsInvalidDateRangeException() {
+        assertThrows(InvalidDateRangeException.class, () -> Parser.createCommand(
+                CommandType.EVENT,
+                "event meeting /from 2026-08-30 1800 /to 2026-08-30 1800"));
     }
 
     @Test
-    void createCommand_commandWithoutArguments_throwsForExtraInput() {
-        assertThrows(UnexpectedArgumentException.class,
-                () -> Parser.createCommand(CommandType.LIST, "list extra"));
+    void createCommand_commandWithoutArguments_throwsUnexpectedArgumentException() {
+        assertThrows(UnexpectedArgumentException.class, () ->
+                Parser.createCommand(CommandType.LIST, "list extra"));
+    }
+
+    @Test
+    void parseCommandType_knownCommandWithSpacing_returnsCommandType() throws BubuException {
+        assertEquals(CommandType.TODO, Parser.parseCommandType("  todo  read notes"));
+    }
+
+    @Test
+    void parseCommandType_emptyOrUnknownInput_throwsUnknownCommandException() {
+        assertThrows(UnknownCommandException.class, () -> Parser.parseCommandType("   "));
+        assertThrows(UnknownCommandException.class, () -> Parser.parseCommandType("archive"));
+    }
+
+    @Test
+    void parseArg_missingDescription_throwsEmptyDescriptionException() {
+        assertThrows(EmptyDescriptionException.class, () -> Parser.parseArg("todo"));
+    }
+
+    @Test
+    void parseArg_storageDelimiter_throwsInvalidDescriptionException() {
+        assertThrows(InvalidDescriptionException.class, () ->
+                Parser.parseArg("todo description | invalid"));
+    }
+
+    @Test
+    void parseEvent_validInput_returnsDescriptionAndTimes() throws BubuException {
+        String[] result = Parser.parseEvent(
+                "event team meeting /from 2026-08-30 1800 /to 2026-08-30 1900");
+
+        assertArrayEquals(new String[]{"team meeting", "2026-08-30 1800", "2026-08-30 1900"}, result);
+    }
+
+    @Test
+    void parseEvent_missingEndArgument_throwsMissingArgumentException() {
+        assertThrows(MissingArgumentException.class, () ->
+                Parser.parseEvent("event team meeting /from 2026-08-30 1800"));
     }
 }

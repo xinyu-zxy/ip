@@ -19,7 +19,7 @@ import bubu.util.DateTimeParser;
  * Saves the current task list in a simple text file in the project data folder.
  */
 public class Storage {
-    private static final Path FILE_PATH = Path.of("data", "bubu.txt");
+    private static final Path DEFAULT_FILE_PATH = Path.of("data", "bubu.txt");
     private static final String DELIMITER_WRITE = " | ";
     private static final String REGEX_DELIMITER_READ = " \\| ";
 
@@ -51,6 +51,22 @@ public class Storage {
 
     private static final LocalTime DEFAULT_END_TIME = LocalTime.of(23, 59);
     private static final LocalTime DEFAULT_START_TIME = LocalTime.MIDNIGHT;
+    private final Path filePath;
+
+    /** Creates storage using the application's default task file. */
+    public Storage() {
+        this(DEFAULT_FILE_PATH);
+    }
+
+    /**
+     * Creates storage using a specific task file.
+     *
+     * @param filePath file used to save and load tasks.
+     */
+    public Storage(Path filePath) {
+        assert filePath != null : "Storage file path cannot be null";
+        this.filePath = filePath;
+    }
 
     /**
      * Replaces the saved task file with the current contents of the task list.
@@ -63,10 +79,13 @@ public class Storage {
                 .map(this::format)
                 .toList();
         try {
-            Files.createDirectories(FILE_PATH.getParent());
-            Files.write(FILE_PATH, lines);
+            Path parentDirectory = filePath.getParent();
+            if (parentDirectory != null) {
+                Files.createDirectories(parentDirectory);
+            }
+            Files.write(filePath, lines);
         } catch (IOException e) {
-            throw new UncheckedIOException(String.format(SAVE_ERROR_MESSAGE, FILE_PATH), e);
+            throw new UncheckedIOException(String.format(SAVE_ERROR_MESSAGE, filePath), e);
         }
     }
 
@@ -110,12 +129,12 @@ public class Storage {
     public List<Task> load() {
         List<Task> loadedTasks = new ArrayList<>();
 
-        if (!Files.exists(FILE_PATH)) {
+        if (!Files.exists(filePath)) {
             return loadedTasks;
         }
 
         try {
-            List<String> lines = Files.readAllLines(FILE_PATH);
+            List<String> lines = Files.readAllLines(filePath);
             for (String line : lines) {
                 if (line.trim().isEmpty()) {
                     continue;
@@ -123,7 +142,7 @@ public class Storage {
                 loadedTasks.add(parseTask(line));
             }
         } catch (IOException e) {
-            throw new UncheckedIOException(String.format(LOAD_ERROR_MESSAGE, FILE_PATH), e);
+            throw new UncheckedIOException(String.format(LOAD_ERROR_MESSAGE, filePath), e);
         }
 
         assert loadedTasks != null : "Loaded tasks list should not be null";

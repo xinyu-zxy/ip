@@ -37,7 +37,17 @@ public class Bubu {
 
     /** Creates Bubu and loads saved tasks without allowing bad data to crash startup. */
     public Bubu() {
-        storage = new Storage();
+        this(new Storage());
+    }
+
+    /**
+     * Creates Bubu with a supplied storage source.
+     *
+     * @param storage storage source for the chatbot's tasks.
+     */
+    Bubu(Storage storage) {
+        assert storage != null : "Storage cannot be null";
+        this.storage = storage;
         TaskList loadedTasks;
         try {
             loadedTasks = new TaskList(storage.load());
