@@ -82,6 +82,20 @@ class BubuTest {
         assertTrue(listResponse.contains("task list is empty"));
     }
 
+    @Test
+    void getResponse_listWithThreeTasks_includesAllTasks() {
+        Bubu bubu = createBubu();
+        bubu.getResponse("todo first task");
+        bubu.getResponse("todo second task");
+        bubu.getResponse("todo third task");
+
+        String response = bubu.getResponse("list");
+
+        assertTrue(response.contains("1. [T][ ] first task"));
+        assertTrue(response.contains("2. [T][ ] second task"));
+        assertTrue(response.contains("3. [T][ ] third task"));
+    }
+
     private Bubu createBubu() {
         return new Bubu(new Storage(temporaryDirectory.resolve("bubu.txt")));
     }

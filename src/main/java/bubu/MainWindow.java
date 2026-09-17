@@ -17,6 +17,8 @@ import javafx.util.Duration;
  */
 public class MainWindow extends AnchorPane {
     private static final double EXIT_DELAY_SECONDS = 3.0;
+    private static final String USER_IMAGE_RESOURCE = "/images/user.png";
+    private static final String BUBU_IMAGE_RESOURCE = "/images/bubu.png";
 
     @FXML
     private ScrollPane scrollPane;
@@ -31,8 +33,10 @@ public class MainWindow extends AnchorPane {
 
     private Bubu bubu;
 
-    private final Image userImage = new Image(this.getClass().getResourceAsStream("/images/user.png"));
-    private final Image bubuImage = new Image(this.getClass().getResourceAsStream("/images/bubu.png"));
+    private final Image userImage = new Image(
+            this.getClass().getResourceAsStream(USER_IMAGE_RESOURCE));
+    private final Image bubuImage = new Image(
+            this.getClass().getResourceAsStream(BUBU_IMAGE_RESOURCE));
 
     /** Binds the conversation view to the latest dialog and prepares scrolling. */
     @FXML

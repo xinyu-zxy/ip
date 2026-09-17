@@ -14,6 +14,7 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
     private static final String APPLICATION_NAME = "Bubu";
+    private static final String MAIN_LAYOUT_RESOURCE = "/view/MainWindow.fxml";
     private static final String STARTUP_ERROR_TITLE = "Bubu could not start";
     private static final String STARTUP_ERROR_MESSAGE =
             "The application layout could not be loaded. Please try starting Bubu again.";
@@ -25,7 +26,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource(MAIN_LAYOUT_RESOURCE));
             AnchorPane ap = fxmlLoader.load();
             Scene scene = new Scene(ap);
             stage.setTitle(APPLICATION_NAME);

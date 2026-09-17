@@ -24,6 +24,13 @@ public class DialogBox extends HBox {
     /** Standard profile-picture size used for each conversation participant. */
     private static final double PROFILE_PICTURE_SIZE = 48.0;
     private static final double PROFILE_PICTURE_CORNER_RADIUS = 18.0;
+    private static final double MESSAGE_COLUMN_WIDTH_RATIO = 0.65;
+    private static final String DIALOG_LAYOUT_RESOURCE = "/view/DialogBox.fxml";
+    private static final String DIALOG_LAYOUT_ERROR_MESSAGE = "Unable to load the dialog layout.";
+    private static final String SPEAKER_NAME_STYLE_CLASS = "speaker-name";
+    private static final String REPLY_STYLE_CLASS = "reply-label";
+    private static final String USER_STYLE_CLASS = "user-label";
+    private static final String ERROR_STYLE_CLASS = "error-label";
     private static final String USER_NAME = "You";
     private static final String BUBU_NAME = "Bubu";
 
@@ -38,17 +45,17 @@ public class DialogBox extends HBox {
 
     private DialogBox(String text, Image img, String speaker) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(MainWindow.class.getResource("/view/DialogBox.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(MainWindow.class.getResource(DIALOG_LAYOUT_RESOURCE));
             fxmlLoader.setController(this);
             fxmlLoader.setRoot(this);
             fxmlLoader.load();
         } catch (IOException e) {
-            throw new IllegalStateException("Unable to load the dialog layout.", e);
+            throw new IllegalStateException(DIALOG_LAYOUT_ERROR_MESSAGE, e);
         }
 
         dialog.setText(text);
         speakerName.setText(speaker.toUpperCase());
-        speakerName.getStyleClass().add("speaker-name");
+        speakerName.getStyleClass().add(SPEAKER_NAME_STYLE_CLASS);
         displayPicture.setImage(img);
         displayPicture.setFitWidth(PROFILE_PICTURE_SIZE);
         displayPicture.setFitHeight(PROFILE_PICTURE_SIZE);
@@ -57,6 +64,9 @@ public class DialogBox extends HBox {
         clip.setArcHeight(PROFILE_PICTURE_CORNER_RADIUS);
         displayPicture.setClip(clip);
         messageColumn.setMaxWidth(Double.MAX_VALUE);
+        messageColumn.maxWidthProperty().bind(widthProperty().multiply(MESSAGE_COLUMN_WIDTH_RATIO));
+        dialog.setMaxWidth(Double.MAX_VALUE);
+        dialog.setWrapText(true);
     }
 
     /**
@@ -68,7 +78,7 @@ public class DialogBox extends HBox {
         getChildren().setAll(tmp);
         setAlignment(Pos.TOP_LEFT);
         messageColumn.setAlignment(Pos.TOP_LEFT);
-        dialog.getStyleClass().add("reply-label");
+        dialog.getStyleClass().add(REPLY_STYLE_CLASS);
     }
 
     /**
@@ -81,7 +91,7 @@ public class DialogBox extends HBox {
     public static DialogBox getUserDialog(String text, Image img) {
         DialogBox dialogBox = new DialogBox(text, img, USER_NAME);
         dialogBox.setAlignment(Pos.CENTER_RIGHT);
-        dialogBox.dialog.getStyleClass().add("user-label");
+        dialogBox.dialog.getStyleClass().add(USER_STYLE_CLASS);
         return dialogBox;
     }
 
@@ -100,6 +110,6 @@ public class DialogBox extends HBox {
 
     /** Applies the attention-grabbing style used for invalid commands. */
     public void setErrorStyle() {
-        dialog.getStyleClass().add("error-label");
+        dialog.getStyleClass().add(ERROR_STYLE_CLASS);
     }
 }
