@@ -32,13 +32,9 @@ public class Bubu {
             "Meow! I could not complete that command. Please try again.";
     private static final String UNHANDLED_COMMAND_MESSAGE = "Unhandled command type: ";
 
-    /** Saves task-list changes to disk. */
     private final Storage storage;
-    /** Stores the tasks currently managed by the chatbot. */
     private final TaskList tasks;
-    /** Handles all console interaction. */
     private final Ui ui = new Ui();
-    /** Explains a task-file problem discovered while starting the application. */
     private String startupWarning;
     /** Whether the most recent response was caused by invalid user input. */
     private boolean lastResponseWasError;
@@ -55,7 +51,7 @@ public class Bubu {
      *
      * @param storage storage source for the chatbot's tasks.
      */
-    Bubu(Storage storage) {
+    public Bubu(Storage storage) {
         assert storage != null : "Storage cannot be null";
         this.storage = storage;
         TaskList loadedTasks;
@@ -240,13 +236,7 @@ public class Bubu {
             case EVENT:
             case FIND:
             case REMIND:
-                Command command = Parser.createCommand(commandType, input);
-                assert command != null : "Parser must create a valid Command object";
-                assert tasks != null : "TaskList must not be null before execution";
-                assert ui != null : "Ui must not be null before execution";
-                assert storage != null : "Storage must not be null before execution";
-                command.execute(tasks, ui, storage);
-                lastResponseWasExit = command.isExit();
+                executeParsedCommand(commandType, input);
                 break;
             case MARK:
                 commandMark(input);
@@ -258,8 +248,24 @@ public class Bubu {
                 commandDelete(input);
                 break;
             default:
-                assert false : UNHANDLED_COMMAND_MESSAGE + commandType;
-                throw new IllegalArgumentException(UNHANDLED_COMMAND_MESSAGE + commandType);
+                throw createUnhandledCommandException(commandType);
         }
+    }
+
+    /** Creates and executes a command that is fully handled by the parser. */
+    private void executeParsedCommand(CommandType commandType, String input) throws BubuException {
+        Command command = Parser.createCommand(commandType, input);
+        assert command != null : "Parser must create a valid Command object";
+        assert tasks != null : "TaskList must not be null before execution";
+        assert ui != null : "Ui must not be null before execution";
+        assert storage != null : "Storage must not be null before execution";
+        command.execute(tasks, ui, storage);
+        lastResponseWasExit = command.isExit();
+    }
+
+    /** Creates an exception for a command type that has no execution path. */
+    private IllegalArgumentException createUnhandledCommandException(CommandType commandType) {
+        assert false : UNHANDLED_COMMAND_MESSAGE + commandType;
+        return new IllegalArgumentException(UNHANDLED_COMMAND_MESSAGE + commandType);
     }
 }

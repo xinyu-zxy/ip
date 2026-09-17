@@ -5,6 +5,16 @@
     -fx-background-radius: 0 12px 12px 0;
 }
 
+.dialog-bubble {
+    -fx-background-color: #ffe0c2;
+    -fx-background-radius: 0 12px 12px 0;
+}
+
+.dialog-bubble .text {
+    -fx-fill: #5c4033;
+    -fx-font: 14px "Arial";
+}
+
 .reply-label {
     -fx-background-color: #ffe0c2;
     -fx-background-radius: 0 12px 12px 12px;
@@ -19,6 +29,10 @@
     -fx-background-radius: 12px 12px 0 12px;
 }
 
+.user-label .text {
+    -fx-fill: white;
+}
+
 .error-label {
     -fx-background-color: #fff0ed;
     -fx-text-fill: #a33b32;
@@ -26,6 +40,10 @@
     -fx-border-width: 1px;
     -fx-border-radius: 0;
     -fx-background-radius: 0 12px 12px 12px;
+}
+
+.error-label .text {
+    -fx-fill: #a33b32;
 }
 
 .message-column {

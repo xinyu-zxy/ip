@@ -5,17 +5,22 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
 
-<fx:root alignment="TOP_RIGHT" maxWidth="1.7976931348623157E308" spacing="10.0" stylesheets="@../css/dialog-box.css" type="javafx.scene.layout.HBox" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root alignment="TOP_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" spacing="10.0" stylesheets="@../css/dialog-box.css" type="javafx.scene.layout.HBox" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <VBox fx:id="messageColumn" alignment="TOP_RIGHT" spacing="4.0">
+        <VBox fx:id="messageColumn" alignment="TOP_RIGHT" maxHeight="1.7976931348623157E308" minHeight="-Infinity" spacing="4.0">
             <children>
                 <Label fx:id="speakerName" text="Speaker" />
-                <Label fx:id="dialog" minHeight="-Infinity" text="Label" wrapText="true">
+                <TextFlow fx:id="dialog" minHeight="-Infinity">
+                    <children>
+                        <Text fx:id="dialogText" text="Label" />
+                    </children>
                     <padding>
                         <Insets bottom="8.0" left="12.0" right="12.0" top="8.0" />
                     </padding>
-                </Label>
+                </TextFlow>
             </children>
         </VBox>
         <ImageView fx:id="displayPicture" fitHeight="48.0" fitWidth="48.0" pickOnBounds="true" preserveRatio="true" />

@@ -1,5 +1,4 @@
-D | 1 | sleep | 2019-10-11 1400
-T | 0 | buy cat food
-T | 0 | first
+D | 0 | sleep | 2019-10-11 1400
+T | 1 | buy cat food
 T | 0 | second
 T | 0 | third
