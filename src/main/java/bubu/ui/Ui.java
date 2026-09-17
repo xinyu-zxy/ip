@@ -12,7 +12,9 @@ public class Ui {
     private static final String WELCOME_BANNER = "/\\___/\\ \n"
             + "(  >.<  )  Hello! I'm BUBU!\n";
     private static final String WELCOME_MESSAGE = "What can I do for you? Meow!";
-    private static final String GOODBYE_MESSAGE = "Bye. Hope to see you again soon! Meow!";
+    private static final String GOODBYE_MESSAGE =
+            "Bye! This window will close in 3 seconds.\n"
+                    + "Hope to see you again soon! Meow!";
 
     // Empty-state and task-operation messages.
     private static final String EMPTY_LIST_MESSAGE = "Meow! Your task list is empty.";

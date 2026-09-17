@@ -19,10 +19,17 @@ import bubu.ui.Ui;
 public class Bubu {
     private static final String REGEX_WHITESPACE = "\\s+";
     private static final int ONE_BASED_INDEX_OFFSET = 1;
+    private static final int ARGUMENT_SPLIT_LIMIT = 2;
+    private static final int COMMAND_ARGUMENT_INDEX = 1;
+    private static final int MINIMUM_COMMAND_PARTS = 2;
 
     private static final String COMMAND_NAME_MARK = "mark";
     private static final String COMMAND_NAME_UNMARK = "unmark";
     private static final String COMMAND_NAME_DELETE = "delete";
+    private static final String STARTUP_WARNING_MESSAGE =
+            "Meow! I could not load some saved tasks. Please check the data file and try again.";
+    private static final String COMMAND_FAILURE_MESSAGE =
+            "Meow! I could not complete that command. Please try again.";
 
     /** Saves task-list changes to disk. */
     private final Storage storage;
@@ -34,6 +41,8 @@ public class Bubu {
     private String startupWarning;
     /** Whether the most recent response was caused by invalid user input. */
     private boolean lastResponseWasError;
+    /** Whether the most recent command requested application exit. */
+    private boolean lastResponseWasExit;
 
     /** Creates Bubu and loads saved tasks without allowing bad data to crash startup. */
     public Bubu() {
@@ -53,8 +62,7 @@ public class Bubu {
             loadedTasks = new TaskList(storage.load());
         } catch (UncheckedIOException | IllegalArgumentException exception) {
             loadedTasks = new TaskList();
-            startupWarning = "Meow! I could not load some saved tasks. "
-                    + "Please check the data file and try again.";
+            startupWarning = STARTUP_WARNING_MESSAGE;
         }
         tasks = loadedTasks;
     }
@@ -140,12 +148,13 @@ public class Bubu {
     private int extractValidIndex(String input, String commandName) throws BubuException {
         assert input != null : "Input cannot be null";
         assert commandName != null : "Command name cannot be null";
-        String[] parts = input.trim().split(REGEX_WHITESPACE, 2);
-        if (parts.length < 2 || parts[1].trim().isEmpty()) {
+        String[] parts = input.trim().split(REGEX_WHITESPACE, ARGUMENT_SPLIT_LIMIT);
+        if (parts.length < MINIMUM_COMMAND_PARTS
+                || parts[COMMAND_ARGUMENT_INDEX].trim().isEmpty()) {
             throw new MissingArgumentException(commandName);
         }
 
-        String rawIndex = parts[1].trim();
+        String rawIndex = parts[COMMAND_ARGUMENT_INDEX].trim();
         try {
             int index = Integer.parseInt(rawIndex) - ONE_BASED_INDEX_OFFSET;
             if (!tasks.hasIndex(index)) {
@@ -167,6 +176,7 @@ public class Bubu {
         assert input != null : "Input cannot be null";
         ui.clearResponse();
         lastResponseWasError = false;
+        lastResponseWasExit = false;
 
         try {
             CommandType commandType = Parser.parseCommandType(input);
@@ -177,10 +187,19 @@ public class Bubu {
             ui.showError(e.getMessage());
         } catch (UncheckedIOException e) {
             lastResponseWasError = true;
-            ui.showError("Meow! I could not complete that command. Please try again.");
+            ui.showError(COMMAND_FAILURE_MESSAGE);
         }
 
         return ui.getResponse();
+    }
+
+    /**
+     * Returns whether the most recent command requested application exit.
+     *
+     * @return true when the most recent command was {@code bye}
+     */
+    public boolean wasLastResponseAnExit() {
+        return lastResponseWasExit;
     }
 
     /**
@@ -226,6 +245,7 @@ public class Bubu {
                 assert ui != null : "Ui must not be null before execution";
                 assert storage != null : "Storage must not be null before execution";
                 command.execute(tasks, ui, storage);
+                lastResponseWasExit = command.isExit();
                 break;
             case MARK:
                 commandMark(input);

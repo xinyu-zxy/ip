@@ -35,6 +35,17 @@ class BubuTest {
     }
 
     @Test
+    void getResponse_bye_marksResponseAsExit() {
+        Bubu bubu = createBubu();
+
+        String response = bubu.getResponse("bye");
+
+        assertTrue(response.contains("Bye"));
+        assertTrue(bubu.wasLastResponseAnExit());
+        assertFalse(bubu.wasLastResponseAnError());
+    }
+
+    @Test
     void getResponse_validTodo_clearsErrorStateAndAddsTask() {
         Bubu bubu = createBubu();
 

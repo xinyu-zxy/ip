@@ -1,7 +1,7 @@
 package bubu.exception;
 
 /**
- * Indicates that the user entered a command word the chatbot does not recognize.
+ * Indicates that the user entered a command the chatbot does not recognize.
  */
 public class UnknownCommandException extends BubuException {
     private static final String UNKNOWN_COMMAND_MESSAGE = "I'm sorry, but I don't know what '%s' means. ^.^";
@@ -10,7 +10,7 @@ public class UnknownCommandException extends BubuException {
     /**
      * Creates an error that names the unrecognized command.
      *
-     * @param command unrecognized command word.
+     * @param command unrecognized command input.
      */
     public UnknownCommandException(String command) {
         super(String.format(UNKNOWN_COMMAND_MESSAGE, command));

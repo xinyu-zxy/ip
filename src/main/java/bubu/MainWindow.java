@@ -1,5 +1,6 @@
 package bubu;
 
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -8,11 +9,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * Controller for the main GUI.
  */
 public class MainWindow extends AnchorPane {
+    private static final double EXIT_DELAY_SECONDS = 3.0;
+
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -79,5 +84,18 @@ public class MainWindow extends AnchorPane {
         }
         dialogContainer.getChildren().addAll(DialogBox.getUserDialog(input, userImage), reply);
         userInput.clear();
+        if (bubu.wasLastResponseAnExit()) {
+            scheduleWindowClose();
+        }
+    }
+
+    /** Closes the application after giving the goodbye message time to display. */
+    private void scheduleWindowClose() {
+        PauseTransition exitDelay = new PauseTransition(Duration.seconds(EXIT_DELAY_SECONDS));
+        exitDelay.setOnFinished(event -> {
+            Stage stage = (Stage) userInput.getScene().getWindow();
+            stage.close();
+        });
+        exitDelay.play();
     }
 }

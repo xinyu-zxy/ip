@@ -3,6 +3,7 @@ package bubu.parser;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -70,7 +71,9 @@ public class ParserTest {
     @Test
     void parseCommandType_emptyOrUnknownInput_throwsUnknownCommandException() {
         assertThrows(UnknownCommandException.class, () -> Parser.parseCommandType("   "));
-        assertThrows(UnknownCommandException.class, () -> Parser.parseCommandType("archive"));
+        UnknownCommandException exception = assertThrows(UnknownCommandException.class, () ->
+                Parser.parseCommandType("he is"));
+        assertTrue(exception.getMessage().contains("'he is'"));
     }
 
     @Test
