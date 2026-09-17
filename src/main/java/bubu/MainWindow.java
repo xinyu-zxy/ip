@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
@@ -20,6 +21,8 @@ public class MainWindow extends AnchorPane {
     private TextField userInput;
     @FXML
     private Button sendButton;
+    @FXML
+    private ImageView backgroundImage;
 
     private Bubu bubu;
 
@@ -29,6 +32,11 @@ public class MainWindow extends AnchorPane {
     /** Binds the conversation view to the latest dialog and prepares scrolling. */
     @FXML
     public void initialize() {
+        assert backgroundImage.getParent() instanceof AnchorPane
+                : "Background image must be placed inside the main AnchorPane";
+        AnchorPane root = (AnchorPane) backgroundImage.getParent();
+        backgroundImage.fitWidthProperty().bind(root.widthProperty());
+        backgroundImage.fitHeightProperty().bind(root.heightProperty());
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
     }
 
