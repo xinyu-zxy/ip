@@ -1,30 +1,38 @@
 # Bubu
 
+```text
+/\___/\
+(  >.<  )  Hello! I'm BUBU!
+```
+
 Bubu is a friendly pet-themed task management chatbot. It supports to-do tasks,
 deadlines, events, task search, and reminders through both a command-line
 interface and a JavaFX graphical user interface.
 
-## Setting up in Intellij
+## User Guide
 
-Prerequisites: JDK 25, update Intellij to the most recent version.
+For installation instructions and the complete command reference, see the
+[Bubu User Guide](https://xinyu-zxy.github.io/ip/).
 
-1. Open Intellij (if you are not in the welcome screen, click `File` > `Close Project` to close the existing project first)
-1. Open the project into Intellij as follows:
+## Setting up in IntelliJ
+
+Prerequisites: JDK 25 and the most recent IntelliJ version.
+
+1. Open IntelliJ. If you are not at the welcome screen, click `File` > `Close Project` first.
+1. Open the project in IntelliJ:
    1. Click `Open`.
    1. Select the project directory, and click `OK`.
    1. If there are any further prompts, accept the defaults.
-1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
+1. Configure the project to use **JDK 25**, as explained in the
+   [IntelliJ JDK documentation](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
    In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/bubu/Launcher.java` file, right-click it, and choose `Run 'Launcher.main()'` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, the Bubu application should start.
-   ```
-    ____        _        
-   |  _ \ _   _| | _____ 
-   | | | | | | | |/ / _ \
-   | |_| | |_| |   <  __/
-   |____/ \__,_|_|\_\___|
-   ```
+1. Locate `src/main/java/bubu/Launcher.java`, right-click it, and choose
+   `Run 'Launcher.main()'`. If the code editor shows compile errors, restart
+   the IDE. If the setup is correct, the Bubu application starts.
 
-**Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+**Warning:** Keep `src\main\java` as the root folder for Java files. Do not
+rename those folders or move Java files outside that path, because tools such
+as Gradle expect the default project layout.
 
 ## Credits
 
