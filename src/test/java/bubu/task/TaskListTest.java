@@ -76,10 +76,10 @@ class TaskListTest {
     }
 
     @Test
-    void findMatchingTasks_returnsTasksContainingKeyword() {
+    void findMatchingTasks_keywordWithDifferentCase_returnsMatchingTasks() {
         TaskList taskList = new TaskList(List.of(new ToDo("read notes"), new ToDo("submit report")));
 
-        List<Task> matches = taskList.findMatchingTasks("read");
+        List<Task> matches = taskList.findMatchingTasks("READ");
 
         assertEquals(List.of("read notes"), matches.stream().map(Task::getDescription).toList());
     }

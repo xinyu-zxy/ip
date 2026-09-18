@@ -89,7 +89,7 @@ delete 1
 
 ### Find tasks : `find`
 
-Search for tasks containing a specific keyword in their description.
+Search for tasks containing a specific keyword in their description. Keyword matching is case-insensitive.
 
 Format: `find KEYWORD`
 

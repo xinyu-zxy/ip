@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import bubu.exception.DuplicateTaskException;
 
@@ -108,16 +109,29 @@ public class TaskList {
     }
 
     /**
-     * Finds tasks whose descriptions contain a given keyword.
+     * Finds tasks whose descriptions contain a given keyword, ignoring letter case.
      *
      * @param keyword the keyword to search for.
      * @return a list of matching tasks.
      */
     public List<Task> findMatchingTasks(String keyword) {
         assert keyword != null : "Keyword cannot be null";
+        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
         return tasks.stream()
-                .filter(task -> task.getDescription().contains(keyword))
+                .filter(task -> descriptionContainsKeyword(task, normalizedKeyword))
                 .toList();
+    }
+
+    /**
+     * Checks whether a task description contains a normalized search keyword.
+     *
+     * @param task the task to check
+     * @param normalizedKeyword the normalized keyword to search for
+     * @return true if the description contains the keyword, false otherwise
+     */
+    private boolean descriptionContainsKeyword(Task task, String normalizedKeyword) {
+        String normalizedDescription = task.getDescription().toLowerCase(Locale.ROOT);
+        return normalizedDescription.contains(normalizedKeyword);
     }
 
     /**
